@@ -7,32 +7,33 @@
 
 struct Points
 {
-    int x;
-    int y;
+    float x;
+    float y;
 };
 
-struct tetromino
-{
-    Points blocks[4]; // 4 blocks making up the tetromino
-    int type;          // 0-6 representing the tetromino type
-    //int rotation;  // Current rotation state (0-3) - Idk if needed
-};
+class tetromino {
+private:
+    Points blocks[4];  // Positions of the 4 blocks
+    Points positionToBoard; // Position of the tetromino on the board
+    Points pivot;        // Pivot point for rotations
+    int type;         // 0 a 6
 
-const tetromino TETROMINOS[7] = {
-    // I
-    {{{0, 1}, {1, 1}, {2, 1}, {3, 1}}, 0},
-    // J
-    {{{0, 0}, {0, 1}, {1, 1}, {2, 1}}, 1},
-    // L
-    {{{2, 0}, {0, 1}, {1, 1}, {2, 1}}, 2},
-    // O
-    {{{1, 0}, {2, 0}, {1, 1}, {2, 1}}, 3},
-    // S
-    {{{1, 0}, {2, 0}, {0, 1}, {1, 1}}, 4},
-    // T
-    {{{1, 0}, {0, 1}, {1, 1}, {2, 1}}, 5},
-    // Z
-    {{{0, 0}, {1, 0}, {1, 1}, {2, 1}}, 6}
+public:    
+    tetromino();
+
+    const Points* getBlock() const;
+    void setBlock(int i, int x, int y);
+    
+    Points getGlobalPosition() const;
+    void setGlobalPosition(int x, int y);
+
+    void rotateTetrominoCW();
+    void rotateTetrominoCCW();
+
+    void moveTetromino(int dx, int dy);
+    void moveTetrominoDown();
+
+    int getType() { return type; }
 };
 
 #endif // TETROMINOS_H
