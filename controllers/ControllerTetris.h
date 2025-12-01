@@ -1,19 +1,11 @@
 #pragma once
+#include "raylib.h"
 
-#include "IState.h"
-#include "StateTetris.h"
-#include "../controllers/ControllerTetris.h"
-#include <memory>
+const Color colors[] = { LIGHTGRAY, RED, GREEN, BLUE, YELLOW };
 
-class StateTetris : public IState {
-public:
-    StateTetris() {}
-    StateTetris(const IState & other) {}
-    void Enter() override;
-    std::unique_ptr<IState> Update() override;
-    void Exit() override;
+class ControllerTetris
+{
 private:
-    ControllerTetris controller;
     int mockBoard[20][10] = {{0,0,0,0,0,0,0,0,0,0}, 
                             {0,0,0,0,0,0,0,0,0,0},
                             {0,0,0,0,0,0,0,0,0,0},
@@ -34,4 +26,9 @@ private:
                             {0,0,0,0,0,0,0,0,0,0},
                             {0,0,0,0,0,0,0,0,0,0},
                             {0,0,0,0,0,0,0,0,0,0}};
+public:
+    ControllerTetris();
+    ~ControllerTetris();
+
+    void Draw();
 };
