@@ -10,7 +10,7 @@ This project requires the **[raylib](https://www.raylib.com/)** library for grap
 ### Raylib Installation
 
 You must have the raylib development libraries installed on your system.
-    Please refer to the official [Raylib Wiki](https://github.com/raysan5/raylib/wiki) for detailed installation instructions.
+    Please refer to the official [Raylib Wiki](https://github.com/raysan5/raylib/) for detailed installation instructions.
 
 ---
 
@@ -19,4 +19,4 @@ You must have the raylib development libraries installed on your system.
 Use the following command in your terminal to compile the source code and run the game.
 
 ```bash
-g++ ./src/*.cpp main.cpp -lraylib -lGL -lm -lpthread -ldl -lrt -lX11 -o game && ./game
+g++ ./*/*.cpp main.cpp -lraylib -lGL -lm -lpthread -ldl -lrt -lX11 -o game && ./game
