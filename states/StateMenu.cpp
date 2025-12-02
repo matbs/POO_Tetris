@@ -3,24 +3,46 @@
 #include <cstdio>
 #include <memory>
 
-void StateMenu::Enter() {}
+void StateMenu::Enter() {
+    for (int i = 0; i < MAX_STARS; i++) {
+        stars[i].position.x = (float)GetRandomValue(0, GetScreenWidth());
+        stars[i].position.y = (float)GetRandomValue(0, GetScreenHeight());
+        
+        stars[i].speed = (float)GetRandomValue(5, 10) / 10.0f; 
+       
+        unsigned char brightness = (unsigned char)(stars[i].speed * 200 + 55); 
+        stars[i].color = {brightness, brightness, brightness, 255};
+    }
+}
 
 std::unique_ptr<IState> StateMenu::Update() {
+    for (int i = 0; i < MAX_STARS; i++) {
+        stars[i].position.y += stars[i].speed * 5.0f; 
+        
+        if (stars[i].position.y >= GetScreenHeight()) {
+            stars[i].position.y = 0.0f;
+            stars[i].position.x = (float)GetRandomValue(0, GetScreenWidth()); 
+        }
+    }
+
+
     BeginDrawing();
+    
+    ClearBackground(BLACK); 
 
-    ClearBackground(DARKGRAY);
-    DrawText("TETRIS", screenWidth / 2-150, screenHeight / 4, 80, LIGHTGRAY);
+    for (int i = 0; i < MAX_STARS; i++) {
+        DrawPixelV(stars[i].position, stars[i].color); 
+    }
+    
+    DrawText("TETRIS", GetScreenWidth() / 2 - 150, GetScreenHeight() / 4, 80, LIGHTGRAY);
 
-    // Draw a square as a placeholder for the start button
-    DrawRectangleRounded({(float)(screenWidth / 2 - 100), (float)(screenHeight / 2 - 25), 200, 50}, 0.2f, 10, GRAY);
-    DrawText("START", screenWidth / 2 - 50, screenHeight / 2 - 10, 30, LIGHTGRAY);
+    DrawRectangleRounded({(float)(GetScreenWidth() / 2 - 100), (float)(GetScreenHeight() / 2 - 25), 200, 50}, 0.2f, 10, GRAY);
+    DrawText("START", GetScreenWidth() / 2 - 50, GetScreenHeight() / 2 - 10, 30, LIGHTGRAY);
 
-    // check for mouse click on the start button
     if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
         Vector2 mousePos = GetMousePosition();
-        if (mousePos.x >= screenWidth / 2 - 100 && mousePos.x <= screenWidth / 2 + 100 &&
-            mousePos.y >= screenHeight / 2 - 25 && mousePos.y <= screenHeight / 2 + 25) {
-            // Transition to the Tetris state
+        if (mousePos.x >= GetScreenWidth() / 2 - 100 && mousePos.x <= GetScreenWidth() / 2 + 100 &&
+            mousePos.y >= GetScreenHeight() / 2 - 25 && mousePos.y <= GetScreenHeight() / 2 + 25) {
             return std::make_unique<StateTetris>();
         }
     }
