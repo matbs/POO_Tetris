@@ -25,7 +25,6 @@ std::unique_ptr<IState> StateMenu::Update() {
         }
     }
 
-
     BeginDrawing();
     
     ClearBackground(BLACK); 
@@ -36,8 +35,11 @@ std::unique_ptr<IState> StateMenu::Update() {
     
     DrawText("TETRIS", GetScreenWidth() / 2 - 150, GetScreenHeight() / 4, 80, LIGHTGRAY);
 
-    DrawRectangleRounded({(float)(GetScreenWidth() / 2 - 100), (float)(GetScreenHeight() / 2 - 25), 200, 50}, 0.2f, 10, GRAY);
-    DrawText("START", GetScreenWidth() / 2 - 50, GetScreenHeight() / 2 - 10, 30, LIGHTGRAY);
+    DrawRectangleRounded({(float)(GetScreenWidth() / 2 - 150), (float)(GetScreenHeight() / 2 - 25), 325, 50}, 0.2f, 10, GRAY);
+    DrawText("SINGLE PLAYER", GetScreenWidth() / 2 - 110, GetScreenHeight() / 2 - 15, 30, LIGHTGRAY);
+
+    DrawRectangleRounded({(float)(GetScreenWidth() / 2 - 150), (float)(GetScreenHeight() / 2 + 40), 325, 50}, 0.2f, 10, GRAY);
+    DrawText("MULTIPLAYER", GetScreenWidth() / 2 - 95, GetScreenHeight() / 2 + 50, 30, LIGHTGRAY);
 
     if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
         Vector2 mousePos = GetMousePosition();
@@ -45,6 +47,7 @@ std::unique_ptr<IState> StateMenu::Update() {
             mousePos.y >= GetScreenHeight() / 2 - 25 && mousePos.y <= GetScreenHeight() / 2 + 25) {
             return std::make_unique<StateTetris>();
         }
+
     }
 
     EndDrawing();
