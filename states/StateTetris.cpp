@@ -1,5 +1,7 @@
 #include "StateTetris.h"
 
+#include <stdio.h>
+
 void StateTetris::Enter() {
     // Initialize thread for controller Tetris
     controllerThread = std::thread(&ControllerTetris::GameLoop, &controllerTetris);
@@ -64,11 +66,13 @@ std::unique_ptr<IState> StateTetris::Update() {
         for (int j = 0; j < 10; j++) {
             int tileValue = controllerTetris.getCell(i, j);
             if (tileValue != 0) {
+                printf("Tetromino block at (%d, %d) with value %d\n", j, i, tileValue); // Debug print
                 DrawBlock(j, i, 15, colors[tileValue]);
             }
         }
     }
     
+
     EndDrawing();
     
     return nullptr;

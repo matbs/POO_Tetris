@@ -5,9 +5,9 @@
 #include <random>
 
 int randomSeven() {
-    static std::random_device rd; // semente real
-    static std::mt19937 gen(rd()); // motor gerador Mersenne Twister
-    static std::uniform_int_distribution<int> dist(0, 6); // faixa [0,6]
+    static std::random_device rd; 
+    static std::mt19937 gen(rd()); 
+    static std::uniform_int_distribution<int> dist(0, 6); 
     return dist(gen);
 }
 
@@ -87,7 +87,7 @@ tetromino::tetromino() {
         // Z
         // {{{0,0}, {1,0}, {1,1}, {2,1}}, 6}
         type = 6;
-        positionToBoard = {0,0};
+        positionToBoard = {1,1}; //Estava em zero,zero
         pivot = {1,1};
         setBlock(0, 0, 0);
         setBlock(1, 1, 0);
@@ -169,7 +169,6 @@ void tetromino::moveTetromino(int dx, int dy) {
 //  Moves the tetromino by (dx, dy) on the board
 // It does not make any verification of collisions or boundaries.
     const Points* b = this->getBlock();
-
     for (int i = 0; i < 4; i++) {
         int x = b[i].x;
         int y = b[i].y;

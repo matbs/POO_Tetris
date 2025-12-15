@@ -4,7 +4,7 @@
 #include <thread>
 #include <chrono>
 
-const Color colors[] = { LIGHTGRAY, RED, GREEN, BLUE, YELLOW };
+const Color colors[] = { LIGHTGRAY, RED, GREEN, BLUE, YELLOW, PURPLE, ORANGE, PINK};
 
 class ControllerTetris
 {
