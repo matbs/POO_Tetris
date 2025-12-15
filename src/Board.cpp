@@ -18,7 +18,7 @@ void Board::spawnTetromino(){ // Spawns a new tetromino at the top of the board
     int spawnX = BOARD_WIDTH / 2 - 1;
     int spawnY = 0;
     t.setGlobalPosition(spawnX, spawnY);  // Set initial position
-    setCurrentTetromino(t);
+    this->setCurrentTetromino(t);
 };
 
 bool Board::checkCollision(const tetromino& t) const {
