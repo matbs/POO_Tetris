@@ -6,7 +6,7 @@ ControllerTetris::ControllerTetris() {}
 ControllerTetris::~ControllerTetris() {}
 
 void ControllerTetris::GameLoop() {
-    while (true)
+    while (this->running)
     {
         board.spawnTetromino();
         tetromino current = board.getCurrentTetromino();

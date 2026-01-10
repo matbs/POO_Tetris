@@ -9,6 +9,7 @@ const Color colors[] = { LIGHTGRAY, RED, GREEN, BLUE, YELLOW, PURPLE, ORANGE, PI
 class ControllerTetris
 {
 private:
+    bool running = true;
     Board board;
     int boardCells[20][10] = {{0}};
 
@@ -17,5 +18,6 @@ public:
     ~ControllerTetris();
 
     void GameLoop();
+    void Stop() { running = false; }
     int getCell(int row, int col) const { return boardCells[row][col]; }
 };

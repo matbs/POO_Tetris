@@ -79,7 +79,9 @@ std::unique_ptr<IState> StateTetris::Update() {
 }
 
 void StateTetris::Exit() {
-    if (controllerThread.joinable()) {
+    controllerTetris.Stop();
+    if (controllerThread.joinable())
+    {
         controllerThread.join();
     }
 }
