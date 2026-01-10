@@ -4,6 +4,7 @@
 #include "StateTetris.h"
 #include "../controllers/ControllerTetris.h"
 #include <memory>
+#include <thread>
 
 class StateTetris : public IState {
 public:
@@ -13,7 +14,8 @@ public:
     std::unique_ptr<IState> Update() override;
     void Exit() override;
 private:
-    ControllerTetris controller;
+    ControllerTetris controllerTetris;
+    std::thread controllerThread;
     int mockBoard[20][10] = {{0,0,0,0,0,0,0,0,0,0}, 
                             {0,0,0,0,0,0,0,0,0,0},
                             {0,0,0,0,0,0,0,0,0,0},

@@ -1,34 +1,21 @@
 #pragma once
 #include "raylib.h"
+#include "../include/Board.h"
+#include <thread>
+#include <chrono>
 
-const Color colors[] = { LIGHTGRAY, RED, GREEN, BLUE, YELLOW };
+const Color colors[] = { LIGHTGRAY, RED, GREEN, BLUE, YELLOW, PURPLE, ORANGE, PINK};
 
 class ControllerTetris
 {
 private:
-    int mockBoard[20][10] = {{0,0,0,0,0,0,0,0,0,0}, 
-                            {0,0,0,0,0,0,0,0,0,0},
-                            {0,0,0,0,0,0,0,0,0,0},
-                            {0,0,0,0,0,0,0,0,0,0},
-                            {0,0,0,0,0,0,0,0,0,0},
-                            {0,0,0,0,0,0,0,0,0,0},
-                            {0,0,0,0,0,0,0,0,0,0},
-                            {0,0,0,0,0,0,0,0,0,0},
-                            {0,0,0,0,0,0,0,0,0,0},
-                            {0,0,0,0,0,0,0,0,0,0},
-                            {0,0,0,0,0,0,1,1,1,1},
-                            {0,0,0,0,0,0,1,1,2,2},
-                            {0,0,2,2,3,3,3,3,3,1},
-                            {0,0,0,0,0,0,0,0,0,0},
-                            {0,0,0,0,0,0,0,0,0,0},
-                            {0,0,0,0,0,0,0,0,0,0},
-                            {0,0,0,0,0,0,0,0,0,0},
-                            {0,0,0,0,0,0,0,0,0,0},
-                            {0,0,0,0,0,0,0,0,0,0},
-                            {0,0,0,0,0,0,0,0,0,0}};
+    Board board;
+    int boardCells[20][10] = {{0}};
+
 public:
     ControllerTetris();
     ~ControllerTetris();
 
-    void Draw();
+    void GameLoop();
+    int getCell(int row, int col) const { return boardCells[row][col]; }
 };
