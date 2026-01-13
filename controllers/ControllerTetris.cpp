@@ -23,6 +23,8 @@ void ControllerTetris::GameLoop() {
         {
             lastUpdateTime = currentTime;
 
+            std::lock_guard<std::mutex> lock(currentTetrominoMutex);
+
             for(int i=0;i<4;++i){
                 int x = currentTetromino.getBlock()[i].x + currentTetromino.getGlobalPosition().x;
                 int y = currentTetromino.getBlock()[i].y + currentTetromino.getGlobalPosition().y;
@@ -36,7 +38,7 @@ void ControllerTetris::GameLoop() {
                 this->spawnTetromino();
             }
 
-            std::lock_guard<std::mutex> lock(currentTetrominoMutex);
+            
             currentTetromino.moveTetrominoDown();
 
             for(int i=0;i<4;++i){
@@ -118,14 +120,41 @@ void ControllerTetris::clearLines() {
 }
 
 void ControllerTetris::moveLeft() {
-    // lock the mutex to ensure thread safety
     std::lock_guard<std::mutex> lock(currentTetrominoMutex);
+    for(int i=0;i<4;++i){
+        int x = currentTetromino.getBlock()[i].x + currentTetromino.getGlobalPosition().x;
+        int y = currentTetromino.getBlock()[i].y + currentTetromino.getGlobalPosition().y;
+        if(x >= 0 && x < 10 && y >= 0 && y < 20)
+            boardCells[y][x] = 0;
+    }
+
     currentTetromino.moveTetromino(-1, 0);
+
+    for(int i=0;i<4;++i){
+        int x = currentTetromino.getBlock()[i].x + currentTetromino.getGlobalPosition().x;
+        int y = currentTetromino.getBlock()[i].y + currentTetromino.getGlobalPosition().y;
+        if(x >= 0 && x < 10 && y >= 0 && y < 20)
+            boardCells[y][x] = currentTetromino.getType() + 1; 
+    }
 }
 
 void ControllerTetris::moveRight() {
     std::lock_guard<std::mutex> lock(currentTetrominoMutex);
+    for(int i=0;i<4;++i){
+        int x = currentTetromino.getBlock()[i].x + currentTetromino.getGlobalPosition().x;
+        int y = currentTetromino.getBlock()[i].y + currentTetromino.getGlobalPosition().y;
+        if(x >= 0 && x < 10 && y >= 0 && y < 20)
+            boardCells[y][x] = 0;
+    }
+
     currentTetromino.moveTetromino(1, 0);
+
+    for(int i=0;i<4;++i){
+        int x = currentTetromino.getBlock()[i].x + currentTetromino.getGlobalPosition().x;
+        int y = currentTetromino.getBlock()[i].y + currentTetromino.getGlobalPosition().y;
+        if(x >= 0 && x < 10 && y >= 0 && y < 20)
+            boardCells[y][x] = currentTetromino.getType() + 1; 
+    }
 }
 
 void ControllerTetris::rotate() {
