@@ -86,6 +86,20 @@ bool ControllerTetris::checkCollision(tetromino& t) {
     return false;
 }
 
+bool ControllerTetris::checkCollisionLateral(tetromino& t, int dx) {
+    const Points* blocks = t.getBlock();
+    for(int i=0;i<4;++i){
+        int x = blocks[i].x + t.getGlobalPosition().x + dx;
+        int y = blocks[i].y + t.getGlobalPosition().y;
+        if(x < 0 || x >= BOARD_WIDTH){
+            return true;}
+        if(boardCells[y][x] != 0){
+            return true;
+        }
+    }
+    return false;
+}
+
 void ControllerTetris::clearLines() {
     for(int i = 0; i < BOARD_HEIGHT; ++i) {
         bool lineFull = true;
@@ -119,6 +133,11 @@ void ControllerTetris::moveLeft() {
     std::lock_guard<std::mutex> lock(currentTetrominoMutex);
     this->hideCurrentTetromino();
 
+    if (this->checkCollisionLateral(currentTetromino, -1)) {
+        this->showCurrentTetromino();
+        return;
+    }
+
     currentTetromino.moveTetromino(-1, 0);
 
     this->showCurrentTetromino();
@@ -133,6 +152,11 @@ void ControllerTetris::moveRight() {
 
     std::lock_guard<std::mutex> lock(currentTetrominoMutex);
     this->hideCurrentTetromino();
+
+    if (this->checkCollisionLateral(currentTetromino, 1)) {
+        this->showCurrentTetromino();
+        return;
+    }
 
     currentTetromino.moveTetromino(1, 0);
 

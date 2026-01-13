@@ -31,6 +31,7 @@ public:
 
     void spawnTetromino(); 
     bool checkCollision( tetromino& t); 
+    bool checkCollisionLateral( tetromino& t, int dx);
     void placePiece(const tetromino& t);
     void clearLines();
     bool checkGameOverSpawn(const tetromino& t) const;
