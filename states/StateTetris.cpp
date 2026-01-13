@@ -45,13 +45,17 @@ std::unique_ptr<IState> StateTetris::Update() {
 
     // Check for key inputs
     if( IsKeyDown(KEY_LEFT)) {
-        // Move piece left
+        printf("Move Left\n");
+        controllerTetris.moveLeft();
     } else if( IsKeyDown(KEY_RIGHT)) {
-        // Move piece right
+        printf("Move Right\n");
+        controllerTetris.moveRight();
     } else if( IsKeyDown(KEY_UP)) {
-        // Rotate piece
+        printf("Rotate\n");
+        controllerTetris.rotate();
     } else if( IsKeyDown(KEY_DOWN)) {
-        // Soft drop piece
+        printf("Soft Drop\n");
+        controllerTetris.softDrop();
     }
 
     BeginDrawing();

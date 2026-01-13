@@ -33,7 +33,7 @@ public:
     void moveTetromino(int dx, int dy);
     void moveTetrominoDown();
 
-    int getType() { return type; }
+    const int getType() const { return type; }
 };
 
 #endif // TETROMINOS_H

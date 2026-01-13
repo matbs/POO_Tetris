@@ -1,7 +1,7 @@
 // Code for describing tetromino movements would go here.
 // adjust the include to the actual header location (common layout: headers in ../include/)
 // https://tetris.fandom.com/wiki/Super_Rotation_System?file=SRS-pieces.png
-#include "../include/Tetrominos.h"
+#include "Tetrominos.h"
 #include <random>
 
 int randomSeven() {

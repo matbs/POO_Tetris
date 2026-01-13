@@ -1,8 +1,12 @@
 #pragma once
 #include "raylib.h"
-#include "../include/Board.h"
+#include "../models/Tetrominos.h"
 #include <thread>
 #include <chrono>
+#include <mutex>
+
+#define BOARD_WIDTH 10
+#define BOARD_HEIGHT 20
 
 const Color colors[] = { LIGHTGRAY, RED, GREEN, BLUE, YELLOW, PURPLE, ORANGE, PINK};
 
@@ -10,7 +14,6 @@ class ControllerTetris
 {
 private:
     bool running = true;
-    Board board;
     int boardCells[20][10] = {{0}};
 
 public:
@@ -20,4 +23,22 @@ public:
     void GameLoop();
     void Stop() { running = false; }
     int getCell(int row, int col) const { return boardCells[row][col]; }
+
+    tetromino getCurrentTetromino();
+    void setCurrentTetromino(const tetromino& t);
+    void print(const tetromino& t) const;
+    
+    void spawnTetromino(); 
+    bool checkCollision( tetromino& t); 
+    void placePiece(const tetromino& t);
+    void clearLines();
+    bool checkGameOverSpawn(const tetromino& t) const;
+
+    void moveLeft();
+    void moveRight();
+    void rotate();
+    void softDrop();
+
+    tetromino currentTetromino; 
+    std::mutex currentTetrominoMutex;
 };
