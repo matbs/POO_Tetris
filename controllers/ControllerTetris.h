@@ -26,8 +26,9 @@ public:
 
     tetromino getCurrentTetromino();
     void setCurrentTetromino(const tetromino& t);
-    void print(const tetromino& t) const;
-    
+    void hideCurrentTetromino();
+    void showCurrentTetromino();
+
     void spawnTetromino(); 
     bool checkCollision( tetromino& t); 
     void placePiece(const tetromino& t);

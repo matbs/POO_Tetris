@@ -13,7 +13,7 @@ ControllerTetris::ControllerTetris() {
 ControllerTetris::~ControllerTetris() {}
 
 void ControllerTetris::GameLoop() {
-    const double interval = 0.5;
+    const double interval = 1;
     double lastUpdateTime = GetTime();
 
     while (this->running)
@@ -25,12 +25,7 @@ void ControllerTetris::GameLoop() {
 
             std::lock_guard<std::mutex> lock(currentTetrominoMutex);
 
-            for(int i=0;i<4;++i){
-                int x = currentTetromino.getBlock()[i].x + currentTetromino.getGlobalPosition().x;
-                int y = currentTetromino.getBlock()[i].y + currentTetromino.getGlobalPosition().y;
-                if(x >= 0 && x < 10 && y >= 0 && y < 20)
-                    boardCells[y][x] = 0;
-            }
+            this->hideCurrentTetromino();
 
             if (this->checkCollision(currentTetromino)) {
                 this->placePiece(currentTetromino);
@@ -38,15 +33,9 @@ void ControllerTetris::GameLoop() {
                 this->spawnTetromino();
             }
 
-            
             currentTetromino.moveTetrominoDown();
 
-            for(int i=0;i<4;++i){
-                int x = currentTetromino.getBlock()[i].x + currentTetromino.getGlobalPosition().x;
-                int y = currentTetromino.getBlock()[i].y + currentTetromino.getGlobalPosition().y;
-                if(x >= 0 && x < 10 && y >= 0 && y < 20)
-                    boardCells[y][x] = currentTetromino.getType() + 1; 
-            }
+            this->showCurrentTetromino();
 
         }
     }
@@ -55,6 +44,24 @@ void ControllerTetris::GameLoop() {
 
 tetromino ControllerTetris::getCurrentTetromino() {
     return currentTetromino;
+}
+
+void ControllerTetris::hideCurrentTetromino() {
+    for(int i=0;i<4;++i){
+        int x = currentTetromino.getBlock()[i].x + currentTetromino.getGlobalPosition().x;
+        int y = currentTetromino.getBlock()[i].y + currentTetromino.getGlobalPosition().y;
+        if(x >= 0 && x < 10 && y >= 0 && y < 20)
+            boardCells[y][x] = 0;
+    }
+}
+
+void ControllerTetris::showCurrentTetromino() {
+    for(int i=0;i<4;++i){
+        int x = currentTetromino.getBlock()[i].x + currentTetromino.getGlobalPosition().x;
+        int y = currentTetromino.getBlock()[i].y + currentTetromino.getGlobalPosition().y;
+        if(x >= 0 && x < 10 && y >= 0 && y < 20)
+            boardCells[y][x] = currentTetromino.getType() + 1; 
+    }
 }
 
 void ControllerTetris::spawnTetromino(){
@@ -85,11 +92,9 @@ bool ControllerTetris::checkCollision(tetromino& t) {
     for(int i=0;i<4;++i){
         int x = blocks[i].x + t.getGlobalPosition().x;
         int y = blocks[i].y + t.getGlobalPosition().y + 1;
-        if(x < 0 || x >= BOARD_WIDTH || y < 0 || y >= BOARD_HEIGHT){
-            printf("Collision bottom (%d, %d)\n", x, y);
+        if(y < 0 || y >= BOARD_HEIGHT){
             return true;}
         if(boardCells[y][x] != 0){
-            printf("Collision piece (%d, %d)\n", x, y);
             return true;
         }
     }
@@ -121,44 +126,35 @@ void ControllerTetris::clearLines() {
 
 void ControllerTetris::moveLeft() {
     std::lock_guard<std::mutex> lock(currentTetrominoMutex);
-    for(int i=0;i<4;++i){
-        int x = currentTetromino.getBlock()[i].x + currentTetromino.getGlobalPosition().x;
-        int y = currentTetromino.getBlock()[i].y + currentTetromino.getGlobalPosition().y;
-        if(x >= 0 && x < 10 && y >= 0 && y < 20)
-            boardCells[y][x] = 0;
-    }
+    this->hideCurrentTetromino();
 
     currentTetromino.moveTetromino(-1, 0);
 
-    for(int i=0;i<4;++i){
-        int x = currentTetromino.getBlock()[i].x + currentTetromino.getGlobalPosition().x;
-        int y = currentTetromino.getBlock()[i].y + currentTetromino.getGlobalPosition().y;
-        if(x >= 0 && x < 10 && y >= 0 && y < 20)
-            boardCells[y][x] = currentTetromino.getType() + 1; 
-    }
+    this->showCurrentTetromino();
 }
 
 void ControllerTetris::moveRight() {
     std::lock_guard<std::mutex> lock(currentTetrominoMutex);
-    for(int i=0;i<4;++i){
-        int x = currentTetromino.getBlock()[i].x + currentTetromino.getGlobalPosition().x;
-        int y = currentTetromino.getBlock()[i].y + currentTetromino.getGlobalPosition().y;
-        if(x >= 0 && x < 10 && y >= 0 && y < 20)
-            boardCells[y][x] = 0;
-    }
+    this->hideCurrentTetromino();
 
     currentTetromino.moveTetromino(1, 0);
 
-    for(int i=0;i<4;++i){
-        int x = currentTetromino.getBlock()[i].x + currentTetromino.getGlobalPosition().x;
-        int y = currentTetromino.getBlock()[i].y + currentTetromino.getGlobalPosition().y;
-        if(x >= 0 && x < 10 && y >= 0 && y < 20)
-            boardCells[y][x] = currentTetromino.getType() + 1; 
-    }
+    this->showCurrentTetromino();
 }
 
 void ControllerTetris::rotate() {
 }
 
 void ControllerTetris::softDrop() {
+    this->hideCurrentTetromino();
+
+    if (this->checkCollision(currentTetromino)) {
+        this->placePiece(currentTetromino);
+        this->clearLines();
+        this->spawnTetromino();
+    }
+
+    currentTetromino.moveTetrominoDown();
+
+    this->showCurrentTetromino();
 }
