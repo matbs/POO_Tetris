@@ -37,9 +37,16 @@ public:
 
     void moveLeft();
     void moveRight();
+    void moveDown();
     void rotate();
-    void softDrop();
 
     tetromino currentTetromino; 
     std::mutex currentTetrominoMutex;
+
+    private:
+        float movementTimer = 0.0f;
+        float movementInterval = 0.1f;
+        
+        float dropTimer = 0.0f;
+        float dropInterval = 1.0f;
 };

@@ -13,30 +13,15 @@ ControllerTetris::ControllerTetris() {
 ControllerTetris::~ControllerTetris() {}
 
 void ControllerTetris::GameLoop() {
-    const double interval = 1;
-    double lastUpdateTime = GetTime();
 
     while (this->running)
     {
         double currentTime = GetTime();
-        if (currentTime - lastUpdateTime >= interval)
+        if (currentTime - dropTimer >= dropInterval) 
         {
-            lastUpdateTime = currentTime;
+            dropTimer = currentTime;
 
-            std::lock_guard<std::mutex> lock(currentTetrominoMutex);
-
-            this->hideCurrentTetromino();
-
-            if (this->checkCollision(currentTetromino)) {
-                this->placePiece(currentTetromino);
-                this->clearLines();
-                this->spawnTetromino();
-            }
-
-            currentTetromino.moveTetrominoDown();
-
-            this->showCurrentTetromino();
-
+            this->moveDown();
         }
     }
     
@@ -125,6 +110,12 @@ void ControllerTetris::clearLines() {
 }
 
 void ControllerTetris::moveLeft() {
+    double currentTime = GetTime();
+    if(currentTime - movementTimer < movementInterval) {
+        return; 
+    }
+    movementTimer = currentTime;
+
     std::lock_guard<std::mutex> lock(currentTetrominoMutex);
     this->hideCurrentTetromino();
 
@@ -134,6 +125,12 @@ void ControllerTetris::moveLeft() {
 }
 
 void ControllerTetris::moveRight() {
+    double currentTime = GetTime();
+    if(currentTime - movementTimer < movementInterval) {
+        return; 
+    }
+    movementTimer = currentTime;
+
     std::lock_guard<std::mutex> lock(currentTetrominoMutex);
     this->hideCurrentTetromino();
 
@@ -142,10 +139,15 @@ void ControllerTetris::moveRight() {
     this->showCurrentTetromino();
 }
 
-void ControllerTetris::rotate() {
-}
+void ControllerTetris::moveDown() {
+    double currentTime = GetTime();
+    if(currentTime - movementTimer < movementInterval) {
+        return; 
+    }
+    movementTimer = currentTime;
 
-void ControllerTetris::softDrop() {
+    std::lock_guard<std::mutex> lock(currentTetrominoMutex);
+
     this->hideCurrentTetromino();
 
     if (this->checkCollision(currentTetromino)) {
@@ -155,6 +157,21 @@ void ControllerTetris::softDrop() {
     }
 
     currentTetromino.moveTetrominoDown();
+
+    this->showCurrentTetromino();
+}
+
+void ControllerTetris::rotate() {
+    double currentTime = GetTime();
+    if(currentTime - movementTimer < movementInterval) {
+        return; 
+    }
+    movementTimer = currentTime;
+
+    std::lock_guard<std::mutex> lock(currentTetrominoMutex);
+    this->hideCurrentTetromino();
+
+    currentTetromino.rotateTetrominoCW();
 
     this->showCurrentTetromino();
 }

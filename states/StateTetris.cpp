@@ -43,7 +43,6 @@ void DrawBlock(int x, int y, int size, Color baseColor) {
 
 std::unique_ptr<IState> StateTetris::Update() {
 
-    // Check for key inputs
     if( IsKeyDown(KEY_LEFT)) {
         printf("Move Left\n");
         controllerTetris.moveLeft();
@@ -55,7 +54,7 @@ std::unique_ptr<IState> StateTetris::Update() {
         controllerTetris.rotate();
     } else if( IsKeyDown(KEY_DOWN)) {
         printf("Soft Drop\n");
-        controllerTetris.softDrop();
+        controllerTetris.moveDown();
     }
 
     BeginDrawing();
@@ -70,13 +69,11 @@ std::unique_ptr<IState> StateTetris::Update() {
         for (int j = 0; j < 10; j++) {
             int tileValue = controllerTetris.getCell(i, j);
             if (tileValue != 0) {
-                //printf("Tetromino block at (%d, %d) with value %d\n", j, i, tileValue); // Debug print
                 DrawBlock(j, i, 15, colors[tileValue]);
             }
         }
     }
     
-
     EndDrawing();
     
     return nullptr;
