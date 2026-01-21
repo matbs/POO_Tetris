@@ -30,7 +30,7 @@ public:
     void showCurrentTetromino();
 
     void spawnTetromino(); 
-    bool checkCollision( tetromino& t); 
+    bool checkCollision( tetromino& t, int dy); 
     bool checkCollisionLateral( tetromino& t, int dx);
     void placePiece(const tetromino& t);
     void clearLines();
