@@ -65,4 +65,5 @@ public:
 
         int score = 0;
         int linesCleared = 0;
+        int level = 0;
 };

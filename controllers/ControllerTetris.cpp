@@ -6,6 +6,10 @@ ControllerTetris::ControllerTetris() {
         for(int j=0;j<10;++j)
             boardCells[i][j]=0;
     
+    score = 0;
+    linesCleared = 0;
+    level = 0; 
+
     tetromino current;
     this->setCurrentTetromino(current);
     this->spawnTetromino(current);
@@ -116,6 +120,8 @@ bool ControllerTetris::checkCollisionLateral(tetromino& t, int dx) {
 }
 
 void ControllerTetris::clearLines() {
+    int linesRemovedInPass = 0; // Contador de linhas nesta jogada
+
     for(int i = 0; i < BOARD_HEIGHT; ++i) {
         bool lineFull = true;
         for(int j = 0; j < BOARD_WIDTH; ++j) {
@@ -126,8 +132,9 @@ void ControllerTetris::clearLines() {
         }
 
         if(lineFull) {
-            score+=100;
-            linesCleared+=1;
+            linesRemovedInPass++; // Apenas conta, não pontua ainda
+            
+            // Move as linhas para baixo
             for(int k = i; k > 0; --k) {
                 for(int j = 0; j < BOARD_WIDTH; ++j) {
                     boardCells[k][j] = boardCells[k-1][j];
@@ -136,7 +143,27 @@ void ControllerTetris::clearLines() {
             for(int j = 0; j < BOARD_WIDTH; ++j) {
                 boardCells[0][j] = 0;
             }
+            
+            i--; 
         }
+    }
+
+    if (linesRemovedInPass > 0) {
+        int basePoints = 0;
+        
+        switch (linesRemovedInPass) {
+            case 1: basePoints = 40; break;
+            case 2: basePoints = 100; break;
+            case 3: basePoints = 300; break;
+            case 4: basePoints = 1200; break;
+            default: basePoints = 0;
+        }
+
+        score += basePoints * (level + 1);
+        
+        linesCleared += linesRemovedInPass;
+
+        level = linesCleared / 10;
     }
 }
 
@@ -192,7 +219,6 @@ void ControllerTetris::moveDown() {
         currentTetromino = nextTetromino;
         tetromino newNext;
         this->setNextTetromino(newNext);
-
     }
 
     currentTetromino.moveTetrominoDown();
