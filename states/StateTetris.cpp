@@ -54,6 +54,13 @@ void DrawHeart(int x, int y, int size, Color color) {
     DrawCircle(px + 3 * size / 4, py + size / 4, size / 4, color);
 }
 
+void DrawDisplay(int posX, int posY, int sizeX, int sizeY) {
+    DrawRectangle(posX, posY, sizeX, sizeY, BLACK);
+    DrawRectangleLines(posX, posY, sizeX, sizeY, MAGENTA);
+    DrawRectangleLines(posX - 2, posY - 2, sizeX + 4, sizeY + 4, LIGHTGRAY);
+    DrawPixel(posX - 2, posY - 2, DARKGRAY);
+}
+
 std::unique_ptr<IState> StateTetris::Update() {
 
     controllerTetris.GameLoop();
@@ -78,11 +85,8 @@ std::unique_ptr<IState> StateTetris::Update() {
     
 
     // Score display
-    DrawRectangle(50, 25, BOARD_WIDTH * 15 + 2, BOARD_HEIGHT * 15 + 2, BLACK);
-    DrawRectangleLines(49, 24, BOARD_WIDTH * 15 + 2, BOARD_HEIGHT * 15 + 2, MAGENTA);
-    DrawRectangleLines(47, 22, BOARD_WIDTH * 15 + 6, BOARD_HEIGHT * 15 + 6, LIGHTGRAY);
-    DrawPixel(47, 22, DARKGRAY);
-    DrawText("Score:", 55, 27, 20, LIGHTGRAY);
+    DrawDisplay(50, 27, BOARD_WIDTH * 15, 50);
+    DrawText("Score:", 55, 30, 20, LIGHTGRAY);
     {
         std::lock_guard<std::mutex> lock(scoreMutex);
         score = controllerTetris.getScore();
@@ -92,29 +96,20 @@ std::unique_ptr<IState> StateTetris::Update() {
     DrawText(scoreText, 55, 50, 20, LIGHTGRAY);
     
     // Line Display
-    DrawRectangle(50, 80 + BOARD_HEIGHT * 15 + 10, (BOARD_WIDTH * 15)/2, 60, BLACK);
-    DrawRectangleLines(49, 79 + BOARD_HEIGHT * 15 + 10, (BOARD_WIDTH * 15)/2, 60, MAGENTA);
-    DrawRectangleLines(47, 77 + BOARD_HEIGHT * 15 + 10, (BOARD_WIDTH * 15)/2 + 4, 64, LIGHTGRAY);
-    DrawPixel(47, 77 + BOARD_HEIGHT * 15 + 10, DARKGRAY);
+    DrawDisplay(50, 80 + BOARD_HEIGHT * 15 + 10, (BOARD_WIDTH * 15)/2, 50);
     DrawText("Lines:", 55, 82 + BOARD_HEIGHT * 15 + 10, 20, LIGHTGRAY);
     char linesText[20];
     sprintf(linesText, "%d", controllerTetris.getLinesCleared());
     DrawText(linesText, 55, 105 + BOARD_HEIGHT * 15 + 10, 20, LIGHTGRAY);
 
     // Next Piece Display
-    DrawRectangle(50 + (BOARD_WIDTH * 15)/2 + 2, 80 + BOARD_HEIGHT * 15 + 10, (BOARD_WIDTH * 15)/2, 50, BLACK);
-    DrawRectangleLines(49 + (BOARD_WIDTH * 15)/2 + 2, 79 + BOARD_HEIGHT * 15 + 10, (BOARD_WIDTH * 15)/2, 50, MAGENTA);
-    DrawRectangleLines(47 + (BOARD_WIDTH * 15)/2 + 2, 77 + BOARD_HEIGHT * 15 + 10, (BOARD_WIDTH * 15)/2 + 4, 54, LIGHTGRAY);
-    DrawPixel(47 + (BOARD_WIDTH * 15)/2 + 2, 77 + BOARD_HEIGHT * 15 + 10, DARKGRAY);
+    DrawDisplay(52 + (BOARD_WIDTH * 15)/2 + 2, 80 + BOARD_HEIGHT * 15 + 10, (BOARD_WIDTH * 15)/2, 50);
     DrawText("Next:", 55 + (BOARD_WIDTH * 15)/2 + 2, 82 + BOARD_HEIGHT * 15 + 10, 20, LIGHTGRAY);
     // Draw next tetromino blocks here (not implemented)
 
 
     // Draw board
-    DrawRectangle(50, 80, BOARD_WIDTH * 15, BOARD_HEIGHT * 15, BLACK);
-    DrawRectangleLines(49, 79, BOARD_WIDTH * 15 + 2, BOARD_HEIGHT * 15 + 2, MAGENTA);
-    DrawRectangleLines(47, 77, BOARD_WIDTH * 15 + 6, BOARD_HEIGHT * 15 + 6, LIGHTGRAY);
-    DrawPixel(47, 77, DARKGRAY);
+    DrawDisplay(50, 80, BOARD_WIDTH * 15, BOARD_HEIGHT * 15);
     
     for (int i = 0; i < 20; i++) {
         for (int j = 0; j < 10; j++) {
@@ -126,11 +121,8 @@ std::unique_ptr<IState> StateTetris::Update() {
     }
 
     // Name and Lifes display
-    DrawRectangle(50, BOARD_HEIGHT * 15 + 140, BOARD_WIDTH * 15 + 2, 50, BLACK);
-    DrawRectangleLines(49, BOARD_HEIGHT * 15 + 139, BOARD_WIDTH * 15 + 2, 50, MAGENTA);
-    DrawRectangleLines(47, BOARD_HEIGHT * 15 + 137, BOARD_WIDTH * 15 + 6, 54, LIGHTGRAY);
-    DrawPixel(47, BOARD_HEIGHT * 15 + 127, DARKGRAY);
-    DrawText("Player", 55, BOARD_HEIGHT * 15 + 140, 20, LIGHTGRAY);
+    DrawDisplay(50, BOARD_HEIGHT * 15 + 170, BOARD_WIDTH * 15 + 2, 50);
+    DrawText("Player", 55, BOARD_HEIGHT * 15 + 170, 20, LIGHTGRAY);
     // draw 3 hearts for lives
     for (int i = 0; i < 3; i++) {
         DrawHeart(55 + i * 30, BOARD_HEIGHT * 15 + 160, 20, RED);
