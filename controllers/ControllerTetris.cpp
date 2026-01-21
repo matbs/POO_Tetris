@@ -62,6 +62,10 @@ void ControllerTetris::setNextTetromino(const tetromino& t) {
     nextTetromino = t;
 }
 
+tetromino ControllerTetris::getNextTetromino() {
+    return nextTetromino;
+}
+
 void ControllerTetris::placePiece(const tetromino& t) {
     const Points* blocks = t.getBlock();
     for(int i=0;i<4;++i){

@@ -7,15 +7,15 @@ void StateTetris::Enter() {
     // controllerThread = std::thread(&ControllerTetris::GameLoop, &controllerTetris);
 }
 
-void DrawBlock(int x, int y, int size, Color baseColor) {
+void DrawBlock( int x, int y, int size, Color baseColor, int offsetX = 50, int offsetY = 80) {
     const int BORDER_SIZE = 2;
     float factor = 0.3f;
 
     Color lightColor = {(unsigned char)(baseColor.r + (255 - baseColor.r) * factor),(unsigned char)(baseColor.g + (255 - baseColor.g) * factor),(unsigned char)(baseColor.b + (255 - baseColor.b) * factor),baseColor.a};
     Color darkColor = {(unsigned char)(baseColor.r * factor), (unsigned char)(baseColor.g * factor), (unsigned char)(baseColor.b * factor), baseColor.a};
     
-    int px = x * size + 50;
-    int py = y * size + 80;
+    int px = x * size + offsetX;
+    int py = y * size + offsetY;
     
     DrawTriangle(
         { (float)(px),          (float)(py + size) },   
@@ -104,9 +104,21 @@ std::unique_ptr<IState> StateTetris::Update() {
 
     // Next Piece Display
     DrawDisplay(52 + (BOARD_WIDTH * 15)/2 + 2, 80 + BOARD_HEIGHT * 15 + 10, (BOARD_WIDTH * 15)/2, 50);
-    DrawText("Next:", 55 + (BOARD_WIDTH * 15)/2 + 2, 82 + BOARD_HEIGHT * 15 + 10, 20, LIGHTGRAY);
     // Draw next tetromino blocks here (not implemented)
-
+    tetromino next = controllerTetris.getNextTetromino();
+    printf("Next Tetromino Type: %d\n", next.getType());
+    const Points* blocks = next.getBlock();
+    int offsetX = 70 + (BOARD_WIDTH * 15)/2 + 2;
+    int offsetY = 90 + BOARD_HEIGHT * 15 + 10;
+    if (next.getType() == 0 || next.getType() == 1) {
+        offsetY = 75 + BOARD_HEIGHT * 15 + 10;
+    }
+    for (int i = 0; i < 4; i++) {
+        int x = blocks[i].x; 
+        int y = blocks[i].y;
+        DrawBlock(x, y, 15, colors[next.getType() + 1], offsetX, offsetY);
+    }
+    
 
     // Draw board
     DrawDisplay(50, 80, BOARD_WIDTH * 15, BOARD_HEIGHT * 15);

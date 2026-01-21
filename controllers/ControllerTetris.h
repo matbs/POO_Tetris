@@ -27,6 +27,7 @@ public:
     tetromino getCurrentTetromino();
     void setCurrentTetromino(const tetromino& t);
     void setNextTetromino(const tetromino& t);
+    tetromino getNextTetromino();
     void hideCurrentTetromino();
     void showCurrentTetromino();
 
