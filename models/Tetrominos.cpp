@@ -1,5 +1,3 @@
-// Code for describing tetromino movements would go here.
-// adjust the include to the actual header location (common layout: headers in ../include/)
 // https://tetris.fandom.com/wiki/Super_Rotation_System?file=SRS-pieces.png
 #include "Tetrominos.h"
 #include <random>
@@ -12,99 +10,153 @@ int randomSeven() {
 }
 
 tetromino::tetromino() {
-    // Default constructor initializes a random tetromino
-    int random = randomSeven();
-    
-    switch (random)
-    {
-    case 0:
-    // I
-    // {{{0,1}, {1,1}, {2,1}, {3,1}}, 0},
-        type = 0;
-        positionToBoard = {1,1};
-        pivot = {1.5,1.5};
-        setBlock(0, 0, 1);
-        setBlock(1, 1, 1);
-        setBlock(2, 2, 1);
-        setBlock(3, 3, 1);
-        break;
-    case 1:
-    //  J
-    //  {{{0,0}, {0,1}, {1,1}, {2,1}}, 1},
-        type = 1;
-        positionToBoard = {0,0};
-        pivot = {1,1};
-        setBlock(0, 0, 0);
-        setBlock(1, 0, 1);
-        setBlock(2, 1, 1);
-        setBlock(3, 2, 1);
-        break;
-    case 2:
-        // L
-        // {{{2,0}, {0,1}, {1,1}, {2,1}}, 2},
-        type = 2;
-        positionToBoard = {0,0};
-        pivot = {1,1};
-        setBlock(0, 2, 0);
-        setBlock(1, 0, 1);
-        setBlock(2, 1, 1);
-        setBlock(3, 2, 1);
-        break;
-    case 3:
-        // O
-        // {{{1,0}, {2,0}, {1,1}, {2,1}}, 3},   
-        type = 3;
-        positionToBoard = {2,0};
-        pivot = {0,1};
-        setBlock(0, 1, 0);
-        setBlock(1, 2, 0);
-        setBlock(2, 1, 1);
-        setBlock(3, 2, 1);
-        break;
-    case 4:
-        // S
-        // {{{1,0}, {2,0}, {0,1}, {1,1}}, 4},
-        type = 4;
-        positionToBoard = {0,0};
-        pivot = {1,1};
-        setBlock(0, 1, 0);
-        setBlock(1, 2, 0);
-        setBlock(2, 0, 1);
-        setBlock(3, 1, 1);
-        break;
-    case 5:
-        // T
-        // {{{1,0}, {0,1}, {1,1}, {2,1}}, 5},
-        type = 5;
-        positionToBoard = {0,0};
-        pivot = {1,1};
-        setBlock(0, 1, 0);
-        setBlock(1, 0, 1);
-        setBlock(2, 1, 1);
-        setBlock(3, 2, 1);
-        break;
-    case 6:
-        // Z
-        // {{{0,0}, {1,0}, {1,1}, {2,1}}, 6}
-        type = 6;
-        positionToBoard = {1,1}; //Estava em zero,zero
-        pivot = {1,1};
-        setBlock(0, 0, 0);
-        setBlock(1, 1, 0);
-        setBlock(2, 1, 1);
-        setBlock(3, 2, 1);
-        break;
+    type = randomSeven();   // Pick one of the 7 tetromino types
+    rotationState = 0;      // Initial rotation state
+
+    // All pieces use integer grid coordinates
+    // Pivot at (1,1) for 3x3 pieces
+    // I-piece uses 4x4, O-piece does not rotate
+
+    switch (type) {
+
+        case 0: // I
+            blocks[0] = {0, 2};
+            blocks[1] = {1, 2};
+            blocks[2] = {2, 2};
+            blocks[3] = {3, 2};
+            positionToBoard = {3, 0};
+            break;
+
+        case 1: // J
+            blocks[0] = {0, 1};
+            blocks[1] = {0, 2};
+            blocks[2] = {1, 1};
+            blocks[3] = {2, 1};
+            positionToBoard = {4, 0};
+            break;
+
+        case 2: // L
+            blocks[0] = {2, 0};
+            blocks[1] = {0, 1};
+            blocks[2] = {1, 1};
+            blocks[3] = {2, 1};
+            positionToBoard = {4, 0};
+            break;
+
+        case 3: // O
+            blocks[0] = {0, 0};
+            blocks[1] = {1, 0};
+            blocks[2] = {0, 1};
+            blocks[3] = {1, 1};
+            positionToBoard = {4, 0};
+            break;
+
+        case 4: // S
+            blocks[0] = {0, 0};
+            blocks[1] = {1, 0};
+            blocks[2] = {1, 1};
+            blocks[3] = {2, 1};
+            positionToBoard = {4, 0};
+            break;
+
+        case 5: // T
+            blocks[0] = {0, 1};
+            blocks[1] = {1, 0};
+            blocks[2] = {1, 1};
+            blocks[3] = {2, 1};
+            positionToBoard = {4, 0};
+            break;
+        case 6: // Z 
+            blocks[0] = {0, 1};
+            blocks[1] = {1, 0};
+            blocks[2] = {1, 1};
+            blocks[3] = {2, 0};
+
+            positionToBoard = {4, 0};
+            break;
+    }
+}
+
+void tetromino::moveTetromino(int dx, int dy) {
+//  Moves the tetromino by (dx, dy) on the board
+// It does not make any verification of collisions or boundaries.
+    positionToBoard.x += dx;
+    positionToBoard.y += dy;
+}
+
+void tetromino::moveTetrominoDown() {
+//  Moves the tetromino down on the board
+// It does not make any verification of collisions or boundaries.
+    moveTetromino(0, 1);
+}
+
+void tetromino::rotateTetrominoCW() {
+    if (type == 3) return; // O-piece does not rotate
+
+    static const int SRS_positions[7][4][8] = {
+        // I-piece (grid 4x4)
+        {
+            {-1,0, 0,0, 1,0, 2,0},    
+            {0,-1, 0,0, 0,1, 0,2},    
+            {-2,0, -1,0, 0,0, 1,0},   
+            {0,-2, 0,-1, 0,0, 0,1}    
+        },
+        // J-piece (grid 3x3)
+        {
+            {-1,-1, -1,0, 0,0, 1,0},
+            {0,-1, 1,-1, 0,0, 0,1},
+            {-1,0, 0,0, 1,0, 1,1},
+            {0,-1, 0,0, -1,1, 0,1}
+        },
+        // L-piece (grid 3x3)
+        {
+            {-1,0, 0,0, 1,0, 1,-1},
+            {0,-1, 0,0, 0,1, 1,1},
+            {-1,0, 0,0, 1,0, -1,1},
+            {-1,-1, 0,-1, 0,0, 0,1}
+        },
+        // O-piece - não usado (não rotaciona)
+        {
+            {0,0, 1,0, 0,1, 1,1},
+            {0,0, 1,0, 0,1, 1,1},
+            {0,0, 1,0, 0,1, 1,1},
+            {0,0, 1,0, 0,1, 1,1}
+        },
+        // S-piece (grid 3x3)
+        {
+            {-1,0, 0,0, 0,-1, 1,-1},
+            {0,-1, 0,0, 1,0, 1,1},
+            {-1,1, 0,1, 0,0, 1,0},
+            {-1,-1, -1,0, 0,0, 0,1}
+        },
+        // T-piece (grid 3x3)
+        {
+            {-1,0, 0,0, 1,0, 0,-1},
+            {0,-1, 0,0, 0,1, 1,0},
+            {-1,0, 0,0, 1,0, 0,1},
+            {0,-1, 0,0, 0,1, -1,0}
+        },
+        // Z-piece (grid 3x3)
+        {
+            {-1,-1, 0,-1, 0,0, 1,0},
+            {0,1, 0,0, 1,0, 1,-1},
+            {-1,0, 0,0, 0,1, 1,1},
+            {-1,0, -1,1, 0,0, 0,-1}
+        }
+    };
+
+    int nextState = (rotationState + 1) % 4;
+
+    for (int i = 0; i < 4; i++) {
+        blocks[i].x = SRS_positions[type][nextState][i * 2];
+        blocks[i].y = SRS_positions[type][nextState][i * 2 + 1];
     }
 
+    rotationState = nextState;
 }
 
 const Points* tetromino::getBlock() const {
     return blocks;
-}
-
-void tetromino::setBlock(int i, int x, int y) {
-    blocks[i].x = x;
-    blocks[i].y = y;
 }
 
 Points tetromino::getGlobalPosition() const {
@@ -116,68 +168,47 @@ void tetromino::setGlobalPosition(int x, int y) {
     positionToBoard.y = y;
 }
 
-
-void tetromino::rotateTetrominoCW() {
-    if (type == 3) return; // O does not rotate
-
-    const Points* b = this->getBlock();
-    float pivotX = this->pivot.x;
-    float pivotY = this->pivot.y;
-
-    Points original[4];
-    for (int i = 0; i < 4; i++) {
-        original[i] = b[i];
+const std::vector<Points> tetromino::I_KICKS[4][4] = {
+    // 0 -> R
+    {
+        {}, {{0,0},{-2,0},{1,0},{-2,-1},{1,2}}, {}, {}
+    },
+    // R -> 2
+    {
+        {}, {}, {{0,0},{-1,0},{2,0},{-1,2},{2,-1}}, {}
+    },
+    // 2 -> L
+    {
+        {}, {}, {}, {{0,0},{2,0},{-1,0},{2,1},{-1,-2}}
+    },
+    // L -> 0
+    {
+        {{0,0},{1,0},{-2,0},{1,-2},{-2,1}}, {}, {}, {}
     }
+};
 
-    for (int i = 0; i < 4; i++) {
-        float relX = original[i].x - pivotX;
-        float relY = original[i].y - pivotY;
-
-        float rotX =  -relY;
-        float rotY = relX;
-
-        this->setBlock(i, round(rotX + pivotX), round(rotY + pivotY));
+const std::vector<Points> tetromino::JLSTZ_KICKS[4][4] = {
+    // 0 -> R
+    {
+        {}, {{0,0},{-1,0},{-1,1},{0,-2},{-1,-2}}, {}, {}
+    },
+    // R -> 2
+    {
+        {}, {}, {{0,0},{1,0},{1,-1},{0,2},{1,2}}, {}
+    },
+    // 2 -> L
+    {
+        {}, {}, {}, {{0,0},{1,0},{1,1},{0,-2},{1,-2}}
+    },
+    // L -> 0
+    {
+        {{0,0},{-1,0},{-1,-1},{0,2},{-1,2}}, {}, {}, {}
     }
-}
+};
 
-void tetromino::rotateTetrominoCCW() {
-    if (type == 3) return; //O does not rotate
-
-    const Points* b = this->getBlock();
-    int pivotX = this->pivot.x;
-    int pivotY = this->pivot.y;
-
-    Points original[4];
-    for (int i = 0; i < 4; i++) {
-        original[i] = b[i];
-    }
-
-    for (int i = 0; i < 4; i++) {
-        int relX = original[i].x - pivotX;
-        int relY = original[i].y - pivotY;
-        // rotaciona 90°: (x, y) -> (y, -x)
-
-        int rotX = relY;
-        int rotY = -relX;
-
-        this->setBlock(i, round(rotX + pivotX), round(rotY + pivotY));
-    }
-}
-
-
-void tetromino::moveTetromino(int dx, int dy) {
-//  Moves the tetromino by (dx, dy) on the board
-// It does not make any verification of collisions or boundaries.
-    const Points* b = this->getBlock();
-    for (int i = 0; i < 4; i++) {
-        int x = b[i].x;
-        int y = b[i].y;
-        this->setBlock(i, x + dx, y + dy);
-    }
-}
-
-void tetromino::moveTetrominoDown() {
-//  Moves the tetromino by (dx, dy) on the board
-// It does not make any verification of collisions or boundaries.
-    this->positionToBoard.y += 1;
+const std::vector<Points>& tetromino::getSRSKicks(int type, int from, int to) {
+    if (type == 0)
+        return I_KICKS[from][to];
+    else
+        return JLSTZ_KICKS[from][to];
 }

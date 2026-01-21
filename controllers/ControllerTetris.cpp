@@ -67,14 +67,19 @@ void ControllerTetris::placePiece(const tetromino& t) {
     
 }
 
-bool ControllerTetris::checkCollision(tetromino& t) {
+bool ControllerTetris::checkCollision(tetromino& t, int dy) {
     const Points* blocks = t.getBlock();
-    for(int i=0;i<4;++i){
-        int x = blocks[i].x + t.getGlobalPosition().x;
-        int y = blocks[i].y + t.getGlobalPosition().y + 1;
-        if(y < 0 || y >= BOARD_HEIGHT){
-            return true;}
-        if(boardCells[y][x] != 0){
+    Points pos = t.getGlobalPosition();
+    
+    for(int i = 0; i < 4; ++i) {
+        int x = blocks[i].x + pos.x;
+        int y = blocks[i].y + pos.y + dy;
+        
+        if(x < 0 || x >= BOARD_WIDTH || y >= BOARD_HEIGHT) {
+            return true;
+        }
+        
+        if(y >= 0 && boardCells[y][x] != 0) {
             return true;
         }
     }
@@ -83,12 +88,17 @@ bool ControllerTetris::checkCollision(tetromino& t) {
 
 bool ControllerTetris::checkCollisionLateral(tetromino& t, int dx) {
     const Points* blocks = t.getBlock();
-    for(int i=0;i<4;++i){
-        int x = blocks[i].x + t.getGlobalPosition().x + dx;
-        int y = blocks[i].y + t.getGlobalPosition().y;
-        if(x < 0 || x >= BOARD_WIDTH){
-            return true;}
-        if(boardCells[y][x] != 0){
+    Points pos = t.getGlobalPosition();
+    
+    for(int i = 0; i < 4; ++i) {
+        int x = blocks[i].x + pos.x + dx;
+        int y = blocks[i].y + pos.y;
+        
+        if(x < 0 || x >= BOARD_WIDTH || y >= BOARD_HEIGHT) {
+            return true;
+        }
+        
+        if(y >= 0 && boardCells[y][x] != 0) {
             return true;
         }
     }
@@ -165,7 +175,7 @@ void ControllerTetris::moveDown() {
 
     this->hideCurrentTetromino();
 
-    if (this->checkCollision(currentTetromino)) {
+    if (this->checkCollision(currentTetromino, 1)) {
         this->placePiece(currentTetromino);
         this->clearLines();
         this->spawnTetromino();
@@ -183,9 +193,27 @@ void ControllerTetris::rotate() {
 
     std::lock_guard<std::mutex> lock(currentTetrominoMutex);
     this->hideCurrentTetromino();
+    
+    int oldState = currentTetromino.getRotationState();
+    int newState = (oldState + 1) % 4;
+
+    tetromino backup = currentTetromino;
 
     currentTetromino.rotateTetrominoCW();
 
+    const auto& kicks = tetromino::getSRSKicks(currentTetromino.getType(), oldState, newState);
+    
+    for (const auto& k : kicks) {
+
+        currentTetromino.moveTetromino(k.x, k.y);
+        if (!checkCollision(currentTetromino, 0) && !checkCollisionLateral(currentTetromino, 0)) {
+            this->showCurrentTetromino();
+            return;
+        }
+        currentTetromino.moveTetromino(-k.x, -k.y);
+    }
+    
+    currentTetromino = backup;
     this->showCurrentTetromino();
 }
 
