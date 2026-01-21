@@ -26,10 +26,11 @@ public:
 
     tetromino getCurrentTetromino();
     void setCurrentTetromino(const tetromino& t);
+    void setNextTetromino(const tetromino& t);
     void hideCurrentTetromino();
     void showCurrentTetromino();
 
-    void spawnTetromino(); 
+    void spawnTetromino(tetromino& t); 
     bool checkCollision( tetromino& t, int dy); 
     bool checkCollisionLateral( tetromino& t, int dx);
     void placePiece(const tetromino& t);
@@ -44,6 +45,8 @@ public:
     bool checkTimer(float& timer, float interval);
 
     tetromino currentTetromino; 
+    tetromino nextTetromino;
+
     std::mutex currentTetrominoMutex;
 
     void setScore(int newScore) { score = newScore; }
