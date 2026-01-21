@@ -6,7 +6,11 @@ ControllerTetris::ControllerTetris() {
         for(int j=0;j<10;++j)
             boardCells[i][j]=0;
     
-    this->spawnTetromino();
+    tetromino current;
+    this->setCurrentTetromino(current);
+    this->spawnTetromino(current);
+    tetromino next;
+    this->setNextTetromino(next);
 }
 
 ControllerTetris::~ControllerTetris() {}
@@ -44,16 +48,18 @@ void ControllerTetris::showCurrentTetromino() {
     }
 }
 
-void ControllerTetris::spawnTetromino(){
-    tetromino t;
+void ControllerTetris::spawnTetromino(tetromino& t) {
     int spawnX = BOARD_WIDTH / 2 - 1;
     int spawnY = 0;
     t.setGlobalPosition(spawnX, spawnY);
-    this->setCurrentTetromino(t);
 };
 
 void ControllerTetris::setCurrentTetromino(const tetromino& t) {
     currentTetromino = t;
+}
+
+void ControllerTetris::setNextTetromino(const tetromino& t) {
+    nextTetromino = t;
 }
 
 void ControllerTetris::placePiece(const tetromino& t) {
@@ -178,7 +184,11 @@ void ControllerTetris::moveDown() {
     if (this->checkCollision(currentTetromino, 1)) {
         this->placePiece(currentTetromino);
         this->clearLines();
-        this->spawnTetromino();
+        this->spawnTetromino(nextTetromino);
+        currentTetromino = nextTetromino;
+        tetromino newNext;
+        this->setNextTetromino(newNext);
+
     }
 
     currentTetromino.moveTetrominoDown();
