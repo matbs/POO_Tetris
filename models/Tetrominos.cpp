@@ -84,10 +84,11 @@ void tetromino::moveTetromino(int dx, int dy) {
     positionToBoard.y += dy;
 }
 
+
 void tetromino::moveTetrominoDown() {
 //  Moves the tetromino down on the board
 // It does not make any verification of collisions or boundaries.
-    moveTetromino(0, 1);
+    positionToBoard.y += 1;
 }
 
 void tetromino::rotateTetrominoCW() {
