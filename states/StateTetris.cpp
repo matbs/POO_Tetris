@@ -56,6 +56,8 @@ void DrawHeart(int x, int y, int size, Color color) {
 
 std::unique_ptr<IState> StateTetris::Update() {
 
+    controllerTetris.GameLoop();
+
     if( IsKeyDown(KEY_LEFT)) {
         printf("Move Left\n");
         controllerTetris.moveLeft();
@@ -69,8 +71,6 @@ std::unique_ptr<IState> StateTetris::Update() {
         printf("Soft Drop\n");
         controllerTetris.moveDown();
     }
-
-    controllerTetris.GameLoop();
 
     BeginDrawing();
 
