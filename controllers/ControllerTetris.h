@@ -38,6 +38,8 @@ public:
     void clearLines();
     bool checkGameOverSpawn(const tetromino& t) const;
 
+    void dropDown();
+    
     void moveLeft();
     void moveRight();
     void moveDown();
@@ -61,7 +63,7 @@ public:
         float movementInterval = 0.1f;
         
         float dropTimer = 0.0f;
-        float dropInterval = 1.0f;
+        float dropInterval = 0.7f;
 
         int score = 0;
         int linesCleared = 0;

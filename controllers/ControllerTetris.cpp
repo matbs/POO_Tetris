@@ -25,8 +25,7 @@ void ControllerTetris::GameLoop() {
     double currentTime = GetTime();
     if (currentTime - dropTimer >= dropInterval) 
     {
-
-        this->moveDown();
+        this->dropDown();
     }
 }
 
@@ -209,8 +208,31 @@ void ControllerTetris::moveRight() {
     this->showCurrentTetromino();
 }
 
+void ControllerTetris::dropDown() {
+    if (checkTimer(dropTimer, dropInterval) == false) {
+        return; 
+    }
+
+    std::lock_guard<std::mutex> lock(currentTetrominoMutex);
+
+    this->hideCurrentTetromino();
+
+    if (this->checkCollision(currentTetromino, 1)) {
+        this->placePiece(currentTetromino);
+        this->clearLines();
+        this->spawnTetromino(nextTetromino);
+        currentTetromino = nextTetromino;
+        tetromino newNext;
+        this->setNextTetromino(newNext);
+    }
+
+    currentTetromino.moveTetrominoDown();
+
+    this->showCurrentTetromino();
+}
+
 void ControllerTetris::moveDown() {
-    if (checkTimer(movementTimer, movementInterval) == false && checkTimer(dropTimer, dropInterval) == false) {
+    if (checkTimer(movementTimer, movementInterval) == false) {
         return; 
     }
 
