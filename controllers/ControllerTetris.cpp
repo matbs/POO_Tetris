@@ -1,5 +1,4 @@
 #include "ControllerTetris.h"
-
 #include <iostream>
 
 ControllerTetris::ControllerTetris() {
@@ -14,17 +13,13 @@ ControllerTetris::~ControllerTetris() {}
 
 void ControllerTetris::GameLoop() {
 
-    while (this->running)
+    double currentTime = GetTime();
+    if (currentTime - dropTimer >= dropInterval) 
     {
-        double currentTime = GetTime();
-        if (currentTime - dropTimer >= dropInterval) 
-        {
-            dropTimer = currentTime;
+        dropTimer = currentTime;
 
-            this->moveDown();
-        }
+        this->moveDown();
     }
-    
 }
 
 tetromino ControllerTetris::getCurrentTetromino() {
@@ -111,6 +106,8 @@ void ControllerTetris::clearLines() {
         }
 
         if(lineFull) {
+            score+=100;
+            linesCleared+=1;
             for(int k = i; k > 0; --k) {
                 for(int j = 0; j < BOARD_WIDTH; ++j) {
                     boardCells[k][j] = boardCells[k-1][j];
@@ -124,11 +121,9 @@ void ControllerTetris::clearLines() {
 }
 
 void ControllerTetris::moveLeft() {
-    double currentTime = GetTime();
-    if(currentTime - movementTimer < movementInterval) {
+    if (checkTimer(movementTimer, movementInterval) == false) {
         return; 
     }
-    movementTimer = currentTime;
 
     std::lock_guard<std::mutex> lock(currentTetrominoMutex);
     this->hideCurrentTetromino();
@@ -144,11 +139,9 @@ void ControllerTetris::moveLeft() {
 }
 
 void ControllerTetris::moveRight() {
-    double currentTime = GetTime();
-    if(currentTime - movementTimer < movementInterval) {
+    if (checkTimer(movementTimer, movementInterval) == false) {
         return; 
     }
-    movementTimer = currentTime;
 
     std::lock_guard<std::mutex> lock(currentTetrominoMutex);
     this->hideCurrentTetromino();
@@ -164,11 +157,9 @@ void ControllerTetris::moveRight() {
 }
 
 void ControllerTetris::moveDown() {
-    double currentTime = GetTime();
-    if(currentTime - movementTimer < movementInterval) {
+    if (checkTimer(movementTimer, movementInterval) == false && checkTimer(dropTimer, dropInterval) == false) {
         return; 
     }
-    movementTimer = currentTime;
 
     std::lock_guard<std::mutex> lock(currentTetrominoMutex);
 
@@ -186,11 +177,9 @@ void ControllerTetris::moveDown() {
 }
 
 void ControllerTetris::rotate() {
-    double currentTime = GetTime();
-    if(currentTime - movementTimer < movementInterval) {
+    if(checkTimer(movementTimer, movementInterval) == false) {
         return; 
     }
-    movementTimer = currentTime;
 
     std::lock_guard<std::mutex> lock(currentTetrominoMutex);
     this->hideCurrentTetromino();
@@ -198,4 +187,13 @@ void ControllerTetris::rotate() {
     currentTetromino.rotateTetrominoCW();
 
     this->showCurrentTetromino();
+}
+
+bool ControllerTetris::checkTimer(float& timer, float interval) {
+    double currentTime = GetTime();
+    if(currentTime - timer >= interval) {
+        timer = currentTime;
+        return true;
+    }
+    return false;
 }

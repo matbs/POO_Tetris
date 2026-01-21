@@ -41,8 +41,16 @@ public:
     void moveDown();
     void rotate();
 
+    bool checkTimer(float& timer, float interval);
+
     tetromino currentTetromino; 
     std::mutex currentTetrominoMutex;
+
+    void setScore(int newScore) { score = newScore; }
+    int getScore() { return score; }
+
+    void setLinesCleared(int newLines) { linesCleared = newLines; }
+    int getLinesCleared() { return linesCleared; }
 
     private:
         float movementTimer = 0.0f;
@@ -50,4 +58,7 @@ public:
         
         float dropTimer = 0.0f;
         float dropInterval = 1.0f;
+
+        int score = 0;
+        int linesCleared = 0;
 };
