@@ -250,6 +250,9 @@ void ControllerTetris::moveDown() {
         this->clearLines();
         this->spawnTetromino(nextTetromino);
         currentTetromino = nextTetromino;
+        if (checkCollision(currentTetromino, 0)) {
+            gameOver = true;
+        }
         tetromino newNext;
         this->setNextTetromino(newNext);
     }
