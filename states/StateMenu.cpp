@@ -1,5 +1,6 @@
 #include "StateMenu.h"
 #include "StateTetris.h"
+#include "StateTetrisMultiplayer.h"
 #include <cstdio>
 #include <memory>
 
@@ -46,6 +47,9 @@ std::unique_ptr<IState> StateMenu::Update() {
         if (mousePos.x >= GetScreenWidth() / 2 - 100 && mousePos.x <= GetScreenWidth() / 2 + 100 &&
             mousePos.y >= GetScreenHeight() / 2 - 25 && mousePos.y <= GetScreenHeight() / 2 + 25) {
             return std::make_unique<StateTetris>();
+        } else if (mousePos.x >= GetScreenWidth() / 2 - 100 && mousePos.x <= GetScreenWidth() / 2 + 100 &&
+                   mousePos.y >= GetScreenHeight() / 2 + 40 && mousePos.y <= GetScreenHeight() / 2 + 90) {
+            return std::make_unique<StateTetrisMultiplayer>();
         }
 
     }
