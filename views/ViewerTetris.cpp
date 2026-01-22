@@ -146,14 +146,19 @@ void ViewerTetris::DrawLives() {
     int startY = boardY + (BOARD_HEIGHT * blockSize) + 70;
     
     DrawDisplay(boardX, startY, BOARD_WIDTH * blockSize, 50);
-    DrawText("Player", boardX + 5, startY + 5, 20, LIGHTGRAY);
     
+    if(controller->isGameOver()) {
+        DrawText("GAME OVER", boardX + 5, startY + 15, 20, RED);
+        return;
+    }
+    DrawText("Player", boardX + 5, startY + 5, 20, LIGHTGRAY);
     for (int i = 0; i < 3; i++) {
         DrawHeart(boardX + 5 + (i * 30), startY + 30, 20, RED);
     }
 }
 
 void ViewerTetris::Draw() {
+    
     DrawScore();
     DrawBoard();
     DrawStats();

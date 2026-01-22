@@ -14,6 +14,7 @@ class ControllerTetris
 {
 private:
     bool running = true;
+    bool gameOver = false;
     int boardCells[20][10] = {{0}};
 
 public:
@@ -22,6 +23,8 @@ public:
 
     void GameLoop();
     void Stop() { running = false; }
+    bool isGameOver() const { return gameOver; }
+    
     int getCell(int row, int col) const { return boardCells[row][col]; }
 
     tetromino getCurrentTetromino();
@@ -39,7 +42,7 @@ public:
     bool checkGameOverSpawn(const tetromino& t) const;
 
     void dropDown();
-    
+
     void moveLeft();
     void moveRight();
     void moveDown();

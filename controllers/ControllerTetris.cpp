@@ -21,7 +21,7 @@ ControllerTetris::ControllerTetris() {
 ControllerTetris::~ControllerTetris() {}
 
 void ControllerTetris::GameLoop() {
-
+    if (!running || gameOver) return;
     double currentTime = GetTime();
     if (currentTime - dropTimer >= dropInterval) 
     {
@@ -52,7 +52,7 @@ void ControllerTetris::showCurrentTetromino() {
 
 void ControllerTetris::spawnTetromino(tetromino& t) {
     int spawnX = BOARD_WIDTH / 2 - 1;
-    int spawnY = 0;
+    int spawnY = -1;
     t.setGlobalPosition(spawnX, spawnY);
 };
 
@@ -173,7 +173,7 @@ void ControllerTetris::clearLines() {
 }
 
 void ControllerTetris::moveLeft() {
-    if (checkTimer(movementTimer, movementInterval) == false) {
+    if (checkTimer(movementTimer, movementInterval) == false || gameOver) {
         return; 
     }
 
@@ -191,7 +191,7 @@ void ControllerTetris::moveLeft() {
 }
 
 void ControllerTetris::moveRight() {
-    if (checkTimer(movementTimer, movementInterval) == false) {
+    if (checkTimer(movementTimer, movementInterval) == false || gameOver) {
         return; 
     }
 
@@ -209,7 +209,7 @@ void ControllerTetris::moveRight() {
 }
 
 void ControllerTetris::dropDown() {
-    if (checkTimer(dropTimer, dropInterval) == false) {
+    if (checkTimer(dropTimer, dropInterval) == false || gameOver) {
         return; 
     }
 
@@ -222,6 +222,11 @@ void ControllerTetris::dropDown() {
         this->clearLines();
         this->spawnTetromino(nextTetromino);
         currentTetromino = nextTetromino;
+
+        if (checkCollision(currentTetromino, 0)) {
+            gameOver = true;
+        }
+
         tetromino newNext;
         this->setNextTetromino(newNext);
     }
@@ -232,7 +237,7 @@ void ControllerTetris::dropDown() {
 }
 
 void ControllerTetris::moveDown() {
-    if (checkTimer(movementTimer, movementInterval) == false) {
+    if (checkTimer(movementTimer, movementInterval) == false || gameOver) {
         return; 
     }
 
