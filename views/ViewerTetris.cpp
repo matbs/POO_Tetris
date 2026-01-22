@@ -66,7 +66,7 @@ void ViewerTetris::DrawDisplay(int posX, int posY, int sizeX, int sizeY) {
 }
 
 void ViewerTetris::DrawScore() {
-    int scoreY = boardY - 53;
+    int scoreY = boardY - 60;
     
     DrawDisplay(boardX, scoreY, BOARD_WIDTH * blockSize, 50);
     DrawText("Score:", boardX + 5, scoreY + 3, 20, LIGHTGRAY);
@@ -80,7 +80,7 @@ void ViewerTetris::DrawScore() {
 
 void ViewerTetris::DrawStats() {
     int statsY = boardY + (BOARD_HEIGHT * blockSize) + 10;
-    int halfWidth = (BOARD_WIDTH * blockSize) / 2;
+    int halfWidth = (BOARD_WIDTH * blockSize) / 2 - 5;
 
     DrawDisplay(boardX, statsY, halfWidth, 50);
     DrawText("Lines:", boardX + 5, statsY + 2, 20, LIGHTGRAY);
@@ -91,8 +91,8 @@ void ViewerTetris::DrawStats() {
 }
 
 void ViewerTetris::DrawNextPiece() {
-    int halfWidth = (BOARD_WIDTH * blockSize) / 2;
-    int nextX = boardX + halfWidth + 2;
+    int halfWidth = (BOARD_WIDTH * blockSize) / 2 - 5;
+    int nextX = boardX + halfWidth + 10;
     int nextY = boardY + (BOARD_HEIGHT * blockSize) + 10;
     
     DrawDisplay(nextX, nextY, halfWidth, 50);
@@ -100,11 +100,14 @@ void ViewerTetris::DrawNextPiece() {
     tetromino next = controller->getNextTetromino();
     const Points* blocks = next.getBlock();
     
-    int drawOffsetX = nextX + 20; 
+    int drawOffsetX = nextX + 15; 
     int drawOffsetY = nextY + 10;
 
     if (next.getType() == 0 || next.getType() == 1) {
         drawOffsetY -= 15;
+    }
+    if (next.getType() == 0) {
+        drawOffsetX -= 10;
     }
 
     for (int i = 0; i < 4; i++) {
@@ -140,13 +143,13 @@ void ViewerTetris::DrawBoard() {
 }
 
 void ViewerTetris::DrawLives() {
-    int startY = boardY + (BOARD_HEIGHT * blockSize) + 90;
+    int startY = boardY + (BOARD_HEIGHT * blockSize) + 70;
     
-    DrawDisplay(boardX, startY, BOARD_WIDTH * blockSize + 2, 50);
+    DrawDisplay(boardX, startY, BOARD_WIDTH * blockSize, 50);
     DrawText("Player", boardX + 5, startY + 5, 20, LIGHTGRAY);
     
     for (int i = 0; i < 3; i++) {
-        DrawHeart(boardX + 5 + (i * 30), startY - 10, 20, RED);
+        DrawHeart(boardX + 5 + (i * 30), startY + 30, 20, RED);
     }
 }
 
