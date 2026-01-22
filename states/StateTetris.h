@@ -3,6 +3,7 @@
 #include "IState.h"
 #include "StateTetris.h"
 #include "../controllers/ControllerTetris.h"
+#include "../views/ViewerTetris.h"
 #include <memory>
 #include <thread>
 
@@ -13,10 +14,11 @@ public:
     void Enter() override;
     std::unique_ptr<IState> Update() override;
     void Exit() override;
-private:
     ControllerTetris controllerTetris;
+    ViewerTetris* viewer;
     std::thread controllerThread;
 
+private:
     int score;
     std::mutex scoreMutex;
 };
