@@ -14,18 +14,20 @@ std::unique_ptr<IState> StateTetrisMultiplayer::Update() {
 
     if( IsKeyDown(KEY_LEFT)) {
         controllerTetris1.moveLeft();
-    } else if( IsKeyDown(KEY_A)) {
-        controllerTetris2.moveLeft();
-    } else if ( IsKeyDown(KEY_D)) {
-        controllerTetris2.moveRight();
     } else if( IsKeyDown(KEY_RIGHT)) {
         controllerTetris1.moveRight();
     } else if( IsKeyDown(KEY_UP)) {
         controllerTetris1.rotate();
-    } else if( IsKeyDown(KEY_W)) {
-        controllerTetris2.rotate();
     } else if( IsKeyDown(KEY_DOWN)) {
         controllerTetris1.moveDown();
+    }
+
+    if( IsKeyDown(KEY_A)) {
+        controllerTetris2.moveLeft();
+    } else if( IsKeyDown(KEY_D)) {
+        controllerTetris2.moveRight();
+    } else if( IsKeyDown(KEY_W)) {
+        controllerTetris2.rotate();
     } else if( IsKeyDown(KEY_S)) {
         controllerTetris2.moveDown();
     }

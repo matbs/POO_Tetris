@@ -51,7 +51,6 @@ std::unique_ptr<IState> StateMenu::Update() {
                    mousePos.y >= GetScreenHeight() / 2 + 40 && mousePos.y <= GetScreenHeight() / 2 + 90) {
             return std::make_unique<StateTetrisMultiplayer>();
         }
-
     }
 
     EndDrawing();
