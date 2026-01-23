@@ -22,6 +22,8 @@ private:
     bool gameOver = false;
     int boardCells[20][10] = {{0}};
 
+    int lifes = 3;
+
 public:
     ControllerTetris();
     ~ControllerTetris();
@@ -68,6 +70,8 @@ public:
 
     void setLinesCleared(int newLines) { linesCleared = newLines; }
     int getLinesCleared() { return linesCleared; }
+
+    void resetBoard();
 
     private:
         float movementTimer = 0.0f;

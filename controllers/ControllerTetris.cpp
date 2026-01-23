@@ -225,8 +225,13 @@ void ControllerTetris::dropDown() {
         currentTetromino = nextTetromino;
 
         if (checkCollision(currentTetromino, 0)) {
-            gameOver = true;
-            scoreManager.addRecord(score, linesCleared, level);
+            if (lifes > 0) {
+                lifes--;
+                resetBoard();
+            } else {            
+                gameOver = true;
+                scoreManager.addRecord(score, linesCleared, level);
+            }
         }
 
         tetromino newNext;
@@ -253,8 +258,13 @@ void ControllerTetris::moveDown() {
         this->spawnTetromino(nextTetromino);
         currentTetromino = nextTetromino;
         if (checkCollision(currentTetromino, 0)) {
-            gameOver = true;
-            scoreManager.addRecord(score, linesCleared, level);
+            if (lifes > 0) {
+                lifes--;
+                resetBoard();
+            } else {
+                gameOver = true;
+                scoreManager.addRecord(score, linesCleared, level);
+            }
         }
         tetromino newNext;
         this->setNextTetromino(newNext);
@@ -323,12 +333,39 @@ void ControllerTetris::hardDown() {
     currentTetromino = nextTetromino;
 
     if (checkCollision(currentTetromino, 0)) {
-        gameOver = true;
-        scoreManager.addRecord(score, linesCleared, level);
+        if (lifes > 0) {
+            lifes--;
+            resetBoard();
+        } else {
+            gameOver = true;
+            scoreManager.addRecord(score, linesCleared, level);
+        }
     }
 
     tetromino newNext;
     this->setNextTetromino(newNext);
 
     this->showCurrentTetromino();
+}
+
+// No arquivo ControllerTetris.cpp
+void ControllerTetris::resetBoard() {
+    // Limpa o tabuleiro
+    for(int i = 0; i < BOARD_HEIGHT; ++i)
+        for(int j = 0; j < BOARD_WIDTH; ++j)
+            boardCells[i][j] = 0;
+    
+    // Mantém: score, linesCleared, level
+    
+    // Gera novas peças
+    tetromino current;
+    this->setCurrentTetromino(current);
+    this->spawnTetromino(current);
+    
+    tetromino next;
+    this->setNextTetromino(next);
+    
+    // Reseta o timer de queda
+    dropTimer = GetTime();
+    gameOver = false;
 }
