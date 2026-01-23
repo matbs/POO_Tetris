@@ -18,7 +18,7 @@ public:
     ControllerTetris controllerTetris2;
     ViewerTetris* viewer1;
     ViewerTetris* viewer2;
-
+    int winner;
 private:
     int score;
     std::mutex scoreMutex;

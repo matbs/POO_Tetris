@@ -12,6 +12,28 @@ std::unique_ptr<IState> StateTetrisMultiplayer::Update() {
     controllerTetris1.GameLoop();
     controllerTetris2.GameLoop();
 
+    if (winner == 0) {
+        if (controllerTetris1.isGameOver() && controllerTetris2.isGameOver()) {
+            int score1 = controllerTetris1.getScore();
+            int score2 = controllerTetris2.getScore();
+            if (score1 > score2) {
+                winner = 1;
+            } else if (score2 > score1) {
+                winner = 2;
+            } else {
+                winner = 3;
+            }
+        }
+    }
+
+    if (IsKeyPressed(KEY_R))
+    {
+        controllerTetris1.resetGame();
+        controllerTetris2.resetGame();
+        winner = 0;
+    }
+    
+
     if( IsKeyDown(KEY_LEFT)) {
         controllerTetris1.moveLeft();
     } else if( IsKeyDown(KEY_RIGHT)) {
@@ -43,6 +65,35 @@ std::unique_ptr<IState> StateTetrisMultiplayer::Update() {
     viewer1->Draw();
     viewer2->Draw();
     
+    if (winner > 0) {
+        std::string winnerText;
+        Color textColor;
+        
+        switch (winner) {
+            case 1:
+                winnerText = "PLAYER 1 WON!";
+                textColor = RED;
+                break;
+            case 2:
+                winnerText = "PLAYER 2 WON!";
+                textColor = BLUE;
+                break;
+            case 3:
+                winnerText = "TIE!";
+                textColor = YELLOW;
+                break;
+        }
+        
+        int score1 = controllerTetris1.getScore();
+        int score2 = controllerTetris2.getScore();
+        DrawRectangle(140, 10, 300, 210, BLACK);
+        DrawText("FINAL SCORE", 150, 20, 30, WHITE);
+        DrawText(TextFormat("Player 1: %d", score1), 150, 60, 25, RED);
+        DrawText(TextFormat("Player 2: %d", score2), 150, 90, 25, BLUE);
+        DrawText(winnerText.c_str(), 150, 130, 35, textColor);
+        DrawText("Press R to reset the game", 150, 180, 20, GREEN);
+    }
+
     EndDrawing();
     
     return nullptr;

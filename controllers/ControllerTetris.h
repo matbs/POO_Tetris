@@ -75,7 +75,8 @@ public:
     void resetGame();
 
     int getLifes() { return lifes; }
-
+    int getScore() const { return score; }
+    
     private:
         float movementTimer = 0.0f;
         float movementInterval = 0.1f;
