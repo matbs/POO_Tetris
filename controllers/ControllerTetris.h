@@ -4,15 +4,20 @@
 #include <thread>
 #include <chrono>
 #include <mutex>
+#include "../assets/ScoreManager.h"
 
 #define BOARD_WIDTH 10
 #define BOARD_HEIGHT 20
 
 const Color colors[] = { LIGHTGRAY, RED, GREEN, BLUE, YELLOW, PURPLE, ORANGE, PINK};
 
+
+
 class ControllerTetris
 {
 private:
+    ScoreManager scoreManager;
+
     bool running = true;
     bool gameOver = false;
     int boardCells[20][10] = {{0}};
@@ -48,7 +53,9 @@ public:
     void moveDown();
     void rotate();
     void hardDown();
-    
+
+    void writeRecord();
+
     bool checkTimer(float& timer, float interval);
 
     tetromino currentTetromino; 

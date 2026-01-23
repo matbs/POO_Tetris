@@ -1,8 +1,9 @@
 #include "ControllerTetris.h"
 #include <iostream>
 #include <cmath>
+#include "../assets/ScoreManager.h"
 
-ControllerTetris::ControllerTetris() {
+ControllerTetris::ControllerTetris() : scoreManager("tetris_records.txt") {
     for(int i=0;i<20;++i)
         for(int j=0;j<10;++j)
             boardCells[i][j]=0;
@@ -225,6 +226,7 @@ void ControllerTetris::dropDown() {
 
         if (checkCollision(currentTetromino, 0)) {
             gameOver = true;
+            scoreManager.addRecord(score, linesCleared, level);
         }
 
         tetromino newNext;
@@ -252,6 +254,7 @@ void ControllerTetris::moveDown() {
         currentTetromino = nextTetromino;
         if (checkCollision(currentTetromino, 0)) {
             gameOver = true;
+            scoreManager.addRecord(score, linesCleared, level);
         }
         tetromino newNext;
         this->setNextTetromino(newNext);
@@ -321,6 +324,7 @@ void ControllerTetris::hardDown() {
 
     if (checkCollision(currentTetromino, 0)) {
         gameOver = true;
+        scoreManager.addRecord(score, linesCleared, level);
     }
 
     tetromino newNext;

@@ -12,6 +12,8 @@ class StateMenu : public IState {
 private:
     static const int MAX_STARS = 250;
     Star stars[MAX_STARS];
+
+    bool showingRanking = false;
 public:
     void Enter() override;
     std::unique_ptr<IState> Update() override;
