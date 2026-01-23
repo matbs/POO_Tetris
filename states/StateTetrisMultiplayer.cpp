@@ -20,6 +20,8 @@ std::unique_ptr<IState> StateTetrisMultiplayer::Update() {
         controllerTetris1.rotate();
     } else if( IsKeyDown(KEY_DOWN)) {
         controllerTetris1.moveDown();
+    } else if (IsKeyPressed(KEY_KP_0)) {
+        controllerTetris1.hardDown();
     }
 
     if( IsKeyDown(KEY_A)) {
@@ -30,6 +32,8 @@ std::unique_ptr<IState> StateTetrisMultiplayer::Update() {
         controllerTetris2.rotate();
     } else if( IsKeyDown(KEY_S)) {
         controllerTetris2.moveDown();
+    } else if( IsKeyPressed(KEY_LEFT_SHIFT)) {
+        controllerTetris2.hardDown();
     }
 
     BeginDrawing();
