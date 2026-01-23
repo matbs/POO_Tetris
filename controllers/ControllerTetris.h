@@ -47,7 +47,8 @@ public:
     void moveRight();
     void moveDown();
     void rotate();
-
+    void hardDown();
+    
     bool checkTimer(float& timer, float interval);
 
     tetromino currentTetromino; 

@@ -301,3 +301,30 @@ bool ControllerTetris::checkTimer(float& timer, float interval) {
     }
     return false;
 }
+
+void ControllerTetris::hardDown() {
+    if (gameOver) {
+        return; 
+    }
+
+    std::lock_guard<std::mutex> lock(currentTetrominoMutex);
+    this->hideCurrentTetromino();
+
+    while (!this->checkCollision(currentTetromino, 1)) {
+        currentTetromino.moveTetrominoDown();
+    }
+
+    this->placePiece(currentTetromino);
+    this->clearLines();
+    this->spawnTetromino(nextTetromino);
+    currentTetromino = nextTetromino;
+
+    if (checkCollision(currentTetromino, 0)) {
+        gameOver = true;
+    }
+
+    tetromino newNext;
+    this->setNextTetromino(newNext);
+
+    this->showCurrentTetromino();
+}

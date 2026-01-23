@@ -22,6 +22,9 @@ std::unique_ptr<IState> StateTetris::Update() {
     } else if( IsKeyDown(KEY_DOWN)) {
         printf("Soft Drop\n");
         controllerTetris.moveDown();
+    } else if( IsKeyPressed(KEY_SPACE)) {
+        printf("Hard Drop\n");
+        controllerTetris.hardDown();
     }
 
     BeginDrawing();
