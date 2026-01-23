@@ -348,16 +348,11 @@ void ControllerTetris::hardDown() {
     this->showCurrentTetromino();
 }
 
-// No arquivo ControllerTetris.cpp
 void ControllerTetris::resetBoard() {
-    // Limpa o tabuleiro
     for(int i = 0; i < BOARD_HEIGHT; ++i)
         for(int j = 0; j < BOARD_WIDTH; ++j)
             boardCells[i][j] = 0;
     
-    // Mantém: score, linesCleared, level
-    
-    // Gera novas peças
     tetromino current;
     this->setCurrentTetromino(current);
     this->spawnTetromino(current);
@@ -365,7 +360,28 @@ void ControllerTetris::resetBoard() {
     tetromino next;
     this->setNextTetromino(next);
     
-    // Reseta o timer de queda
     dropTimer = GetTime();
+    gameOver = false;
+}
+
+void ControllerTetris::resetGame() {
+    for(int i = 0; i < BOARD_HEIGHT; ++i)
+        for(int j = 0; j < BOARD_WIDTH; ++j)
+            boardCells[i][j] = 0;
+    
+    score = 0;
+    linesCleared = 0;
+    level = 0;
+    lifes = 3; 
+
+    tetromino current;
+    this->setCurrentTetromino(current);
+    this->spawnTetromino(current);
+    
+    tetromino next;
+    this->setNextTetromino(next);
+    
+    dropTimer = GetTime();
+    movementTimer = GetTime();
     gameOver = false;
 }

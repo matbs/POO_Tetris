@@ -72,6 +72,9 @@ public:
     int getLinesCleared() { return linesCleared; }
 
     void resetBoard();
+    void resetGame();
+
+    int getLifes() { return lifes; }
 
     private:
         float movementTimer = 0.0f;

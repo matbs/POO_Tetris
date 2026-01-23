@@ -152,7 +152,7 @@ void ViewerTetris::DrawLives() {
         return;
     }
     DrawText("Player", boardX + 5, startY + 5, 20, LIGHTGRAY);
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < controller->getLifes(); i++) {
         DrawHeart(boardX + 5 + (i * 30), startY + 30, 20, RED);
     }
 }
