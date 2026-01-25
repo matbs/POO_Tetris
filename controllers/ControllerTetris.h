@@ -33,6 +33,7 @@ public:
     bool isGameOver() const { return gameOver; }
     
     int getCell(int row, int col) const { return boardCells[row][col]; }
+    void setCell(int row, int col, int value) { boardCells[row][col] = value; }
 
     tetromino getCurrentTetromino();
     void setCurrentTetromino(const tetromino& t);

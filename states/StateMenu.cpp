@@ -1,6 +1,7 @@
 #include "StateMenu.h"
 #include "StateTetris.h"
 #include "StateTetrisMultiplayer.h"
+#include "StateTetrisOnline.h"
 #include "../assets/ScoreManager.h"
 #include <cstdio>
 #include <memory>
@@ -68,12 +69,14 @@ std::unique_ptr<IState> StateMenu::Update() {
 
     Rectangle btnSingle = { (float)(GetScreenWidth() / 2 - 150), (float)(GetScreenHeight() / 2 - 25), 325, 50 };
     Rectangle btnMulti = { (float)(GetScreenWidth() / 2 - 150), (float)(GetScreenHeight() / 2 + 40), 325, 50 };
-    Rectangle btnRank = { (float)(GetScreenWidth() / 2 - 150), (float)(GetScreenHeight() / 2 + 100), 325, 50 };
+    Rectangle btnOnline = { (float)(GetScreenWidth() / 2 - 150), (float)(GetScreenHeight() / 2 + 105), 325, 50 };
+    Rectangle btnRank = { (float)(GetScreenWidth() / 2 - 150), (float)(GetScreenHeight() / 2 + 170), 325, 50 };
 
     Vector2 mousePos = GetMousePosition();
 
     bool overSingle = CheckCollisionPointRec(mousePos, btnSingle);
     bool overMulti = CheckCollisionPointRec(mousePos, btnMulti);
+    bool overOnline = CheckCollisionPointRec(mousePos, btnOnline);
     bool overRank = CheckCollisionPointRec(mousePos, btnRank);
 
     if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
@@ -81,6 +84,8 @@ std::unique_ptr<IState> StateMenu::Update() {
             return std::make_unique<StateTetris>();
         } else if (overMulti) {
             return std::make_unique<StateTetrisMultiplayer>();
+        } else if (overOnline) {
+            return std::make_unique<StateTetrisOnline>();
         } else if (overRank) {
             showingRanking = !showingRanking;
         }
@@ -106,10 +111,15 @@ std::unique_ptr<IState> StateMenu::Update() {
     int textWidthMulti = MeasureText("MULTIPLAYER", 30);
     DrawText("MULTIPLAYER", (int)(btnMulti.x + (btnMulti.width - textWidthMulti) / 2), (int)(btnMulti.y + 10), 30, overMulti ? BLACK : LIGHTGRAY);
 
+    DrawRectangleRec(btnOnline, overOnline ? LIGHTGRAY : GRAY);
+    DrawRectangleLinesEx(btnOnline, 2, WHITE);
+    int textWidthOnline = MeasureText("ONLINE PLAY", 30);
+    DrawText("ONLINE PLAY", (int)(btnOnline.x + (btnOnline.width - textWidthOnline) / 2), (int)(btnOnline.y + 10), 30, overOnline ? BLACK : LIGHTGRAY);
+
     DrawRectangleRec(btnRank, overRank ? LIGHTGRAY : GRAY);
     DrawRectangleLinesEx(btnRank, 2, WHITE);
-    int textWidthRank = MeasureText("RANKINGS", 30);
-    DrawText("RANKINGS", (int)(btnRank.x + (btnRank.width - textWidthRank) / 2), (int)(btnRank.y + 10), 30, overRank ? BLACK : LIGHTGRAY);
+    int textWidthRank = MeasureText("RANKING", 30);
+    DrawText("RANKING", (int)(btnRank.x + (btnRank.width - textWidthRank) / 2), (int)(btnRank.y + 10), 30, overRank ? BLACK : LIGHTGRAY);
 
     if (showingRanking) {
         std::vector<ScoreRecord> topScores = scoreManager.getTopScores();
