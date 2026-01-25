@@ -1,4 +1,5 @@
 #include "StateMenu.h"
+#include "StateRanking.h"
 #include "StateTetris.h"
 #include "StateTetrisMultiplayer.h"
 #include "StateTetrisOnline.h"
@@ -87,7 +88,7 @@ std::unique_ptr<IState> StateMenu::Update() {
         } else if (overOnline) {
             return std::make_unique<StateTetrisOnline>();
         } else if (overRank) {
-            showingRanking = !showingRanking;
+            return std::make_unique<StateRanking>();
         }
     }
 
@@ -120,11 +121,6 @@ std::unique_ptr<IState> StateMenu::Update() {
     DrawRectangleLinesEx(btnRank, 2, WHITE);
     int textWidthRank = MeasureText("RANKING", 30);
     DrawText("RANKING", (int)(btnRank.x + (btnRank.width - textWidthRank) / 2), (int)(btnRank.y + 10), 30, overRank ? BLACK : LIGHTGRAY);
-
-    if (showingRanking) {
-        std::vector<ScoreRecord> topScores = scoreManager.getTopScores();
-        DrawRanking(topScores);
-    }
 
     EndDrawing();
     return nullptr;
