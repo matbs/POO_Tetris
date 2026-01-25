@@ -1,13 +1,23 @@
 #include "StateTetrisMultiplayer.h"
+#include "StateMenu.h"
 
 #include <stdio.h>
 
 void StateTetrisMultiplayer::Enter() {
-    viewer2 = new ViewerTetris(&controllerTetris2, 50, 80, 15);
-    viewer1 = new ViewerTetris(&controllerTetris1, 300, 80, 15);
+    viewer2 = new ViewerTetris(&controllerTetris2, 50, 150, 15);
+    viewer1 = new ViewerTetris(&controllerTetris1, 300, 150, 15);
 }
 
 std::unique_ptr<IState> StateTetrisMultiplayer::Update() {
+
+    Rectangle btnMenuRect = { 50, 20, 100, 40 };
+    Vector2 mousePos = GetMousePosition();
+    
+    bool isMouseOver = CheckCollisionPointRec(mousePos, btnMenuRect);
+    
+    if (isMouseOver && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+        return std::make_unique<StateMenu>(); 
+    }
 
     controllerTetris1.GameLoop();
     controllerTetris2.GameLoop();
@@ -93,6 +103,18 @@ std::unique_ptr<IState> StateTetrisMultiplayer::Update() {
         DrawText(winnerText.c_str(), 150, 130, 35, textColor);
         DrawText("Press R to reset the game", 150, 180, 20, GREEN);
     }
+
+
+    Color btnColor = isMouseOver ? LIGHTGRAY : GRAY;
+    Color textColor = isMouseOver ? BLACK : WHITE;
+
+    DrawRectangleRec(btnMenuRect, btnColor);
+    DrawRectangleLinesEx(btnMenuRect, 2, WHITE);
+
+    int textWidth = MeasureText("MENU", 20);
+    int textX = btnMenuRect.x + (btnMenuRect.width - textWidth) / 2;
+    int textY = btnMenuRect.y + (btnMenuRect.height - 20) / 2;
+    DrawText("MENU", textX, textY, 20, textColor);
 
     EndDrawing();
     

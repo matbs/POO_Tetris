@@ -66,6 +66,26 @@ std::unique_ptr<IState> StateMenu::Update() {
         }
     }
 
+    Rectangle btnSingle = { (float)(GetScreenWidth() / 2 - 150), (float)(GetScreenHeight() / 2 - 25), 325, 50 };
+    Rectangle btnMulti = { (float)(GetScreenWidth() / 2 - 150), (float)(GetScreenHeight() / 2 + 40), 325, 50 };
+    Rectangle btnRank = { (float)(GetScreenWidth() / 2 - 150), (float)(GetScreenHeight() / 2 + 100), 325, 50 };
+
+    Vector2 mousePos = GetMousePosition();
+
+    bool overSingle = CheckCollisionPointRec(mousePos, btnSingle);
+    bool overMulti = CheckCollisionPointRec(mousePos, btnMulti);
+    bool overRank = CheckCollisionPointRec(mousePos, btnRank);
+
+    if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+        if (overSingle) {
+            return std::make_unique<StateTetris>();
+        } else if (overMulti) {
+            return std::make_unique<StateTetrisMultiplayer>();
+        } else if (overRank) {
+            showingRanking = !showingRanking;
+        }
+    }
+
     BeginDrawing();
     
     ClearBackground(BLACK); 
@@ -76,28 +96,20 @@ std::unique_ptr<IState> StateMenu::Update() {
     
     DrawText("TETRIS", GetScreenWidth() / 2 - 150, GetScreenHeight() / 4, 80, LIGHTGRAY);
 
-    DrawRectangleRounded({(float)(GetScreenWidth() / 2 - 150), (float)(GetScreenHeight() / 2 - 25), 325, 50}, 0.2f, 10, GRAY);
-    DrawText("SINGLE PLAYER", GetScreenWidth() / 2 - 110, GetScreenHeight() / 2 - 15, 30, LIGHTGRAY);
+    DrawRectangleRec(btnSingle, overSingle ? LIGHTGRAY : GRAY);
+    DrawRectangleLinesEx(btnSingle, 2, WHITE);
+    int textWidthSingle = MeasureText("SINGLE PLAYER", 30);
+    DrawText("SINGLE PLAYER", (int)(btnSingle.x + (btnSingle.width - textWidthSingle) / 2), (int)(btnSingle.y + 10), 30, overSingle ? BLACK : LIGHTGRAY);
 
-    DrawRectangleRounded({(float)(GetScreenWidth() / 2 - 150), (float)(GetScreenHeight() / 2 + 40), 325, 50}, 0.2f, 10, GRAY);
-    DrawText("MULTIPLAYER", GetScreenWidth() / 2 - 95, GetScreenHeight() / 2 + 50, 30, LIGHTGRAY);
+    DrawRectangleRec(btnMulti, overMulti ? LIGHTGRAY : GRAY);
+    DrawRectangleLinesEx(btnMulti, 2, WHITE);
+    int textWidthMulti = MeasureText("MULTIPLAYER", 30);
+    DrawText("MULTIPLAYER", (int)(btnMulti.x + (btnMulti.width - textWidthMulti) / 2), (int)(btnMulti.y + 10), 30, overMulti ? BLACK : LIGHTGRAY);
 
-    DrawRectangleRounded({ (float)(GetScreenWidth() / 2 - 150), (float)(GetScreenHeight() / 2 + 100), 325, 50 },0.2f, 10, GRAY);
-    DrawText("RANKINGS", GetScreenWidth() / 2 - 70, GetScreenHeight() / 2 + 115, 30, LIGHTGRAY);
-
-    if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-        Vector2 mousePos = GetMousePosition();
-        if (mousePos.x >= GetScreenWidth() / 2 - 100 && mousePos.x <= GetScreenWidth() / 2 + 100 &&
-            mousePos.y >= GetScreenHeight() / 2 - 25 && mousePos.y <= GetScreenHeight() / 2 + 25) {
-            return std::make_unique<StateTetris>();
-        } else if (mousePos.x >= GetScreenWidth() / 2 - 100 && mousePos.x <= GetScreenWidth() / 2 + 100 &&
-                   mousePos.y >= GetScreenHeight() / 2 + 40 && mousePos.y <= GetScreenHeight() / 2 + 90) {
-            return std::make_unique<StateTetrisMultiplayer>();
-        } else if (mousePos.x >= GetScreenWidth() / 2 - 100 && mousePos.x <= GetScreenWidth() / 2 + 100 &&
-                   mousePos.y >= GetScreenHeight() / 2 + 100 && mousePos.y <= GetScreenHeight() / 2 + 150) {
-            showingRanking = !showingRanking;
-        }
-    }
+    DrawRectangleRec(btnRank, overRank ? LIGHTGRAY : GRAY);
+    DrawRectangleLinesEx(btnRank, 2, WHITE);
+    int textWidthRank = MeasureText("RANKINGS", 30);
+    DrawText("RANKINGS", (int)(btnRank.x + (btnRank.width - textWidthRank) / 2), (int)(btnRank.y + 10), 30, overRank ? BLACK : LIGHTGRAY);
 
     if (showingRanking) {
         std::vector<ScoreRecord> topScores = scoreManager.getTopScores();

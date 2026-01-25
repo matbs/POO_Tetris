@@ -1,29 +1,34 @@
 #include "StateTetris.h"
+#include "StateMenu.h"
 
 #include <stdio.h>
 
 void StateTetris::Enter() {
-    viewer = new ViewerTetris(&controllerTetris, 50, 80, 15);
+    viewer = new ViewerTetris(&controllerTetris, 50, 150, 15);
 }
 
 std::unique_ptr<IState> StateTetris::Update() {
 
     controllerTetris.GameLoop();
 
+    Rectangle btnMenuRect = { 50, 20, 100, 40 };
+    Vector2 mousePos = GetMousePosition();
+    
+    bool isMouseOver = CheckCollisionPointRec(mousePos, btnMenuRect);
+    
+    if (isMouseOver && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+        return std::make_unique<StateMenu>(); 
+    }
+
     if( IsKeyDown(KEY_LEFT)) {
-        printf("Move Left\n");
         controllerTetris.moveLeft();
     } else if( IsKeyDown(KEY_RIGHT)) {
-        printf("Move Right\n");
         controllerTetris.moveRight();
     } else if( IsKeyDown(KEY_UP)) {
-        printf("Rotate\n");
         controllerTetris.rotate();
     } else if( IsKeyDown(KEY_DOWN)) {
-        printf("Soft Drop\n");
         controllerTetris.moveDown();
     } else if( IsKeyPressed(KEY_SPACE)) {
-        printf("Hard Drop\n");
         controllerTetris.hardDown();
     } else if (IsKeyPressed(KEY_R)) {
         controllerTetris.resetGame();
@@ -34,6 +39,22 @@ std::unique_ptr<IState> StateTetris::Update() {
     ClearBackground(DARKGRAY);
 
     viewer->Draw();
+
+    Color btnColor = isMouseOver ? LIGHTGRAY : GRAY;
+    Color textColor = isMouseOver ? BLACK : WHITE;
+
+    DrawRectangleRec(btnMenuRect, btnColor);
+    DrawRectangleLinesEx(btnMenuRect, 2, WHITE);
+
+    int textWidth = MeasureText("MENU", 20);
+    int textX = btnMenuRect.x + (btnMenuRect.width - textWidth) / 2;
+    int textY = btnMenuRect.y + (btnMenuRect.height - 20) / 2;
+    DrawText("MENU", textX, textY, 20, textColor);
+    
+    if (controllerTetris.isGameOver()) {
+        DrawText("GAME OVER", 160, 200, 40, RED);
+        DrawText("Press [R] to Restart", 130, 250, 20, WHITE);
+    }
     
     EndDrawing();
     
