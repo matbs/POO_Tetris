@@ -14,8 +14,8 @@ StateTetrisOnline::~StateTetrisOnline() {
 }
 
 void StateTetrisOnline::Enter() {
-    localViewer = new ViewerTetris(&localController, 50, 80, 15);
-    remoteViewer = new ViewerTetris(&remoteController, 400, 80, 15);
+    localViewer = new ViewerTetris(&localController, 50, 150, 15);
+    remoteViewer = new ViewerTetris(&remoteController, 400, 150, 15);
 }
 
 void StateTetrisOnline::SyncGame() {
@@ -46,19 +46,26 @@ void StateTetrisOnline::SyncGame() {
 }
 
 std::unique_ptr<IState> StateTetrisOnline::Update() {
+    Rectangle btnMenuRect = { 50, 20, 100, 40 };
+    Vector2 mousePos = GetMousePosition();
+    
+    bool isMouseOver = CheckCollisionPointRec(mousePos, btnMenuRect);
+    
+    if (isMouseOver && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+        return std::make_unique<StateMenu>(); 
+    }
     
     if (currentPhase == OnlinePhase::SELECT_ROLE) {
         Rectangle btnHost = { (float)GetScreenWidth()/2 - 100, 300, 200, 50 };
         Rectangle btnJoin = { (float)GetScreenWidth()/2 - 100, 400, 200, 50 };
-        Vector2 mouse = GetMousePosition();
         
         if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-            if (CheckCollisionPointRec(mouse, btnHost)) {
+            if (CheckCollisionPointRec(mousePos, btnHost)) {
                 isHost = true;
                 if (network.InitServer(12345)) {
                     currentPhase = OnlinePhase::WAITING_HOST;
                 }
-            } else if (CheckCollisionPointRec(mouse, btnJoin)) {
+            } else if (CheckCollisionPointRec(mousePos, btnJoin)) {
                 isHost = false;
                 currentPhase = OnlinePhase::TYPE_IP;
             }
@@ -66,15 +73,27 @@ std::unique_ptr<IState> StateTetrisOnline::Update() {
 
         BeginDrawing();
         ClearBackground(BLACK);
+
+
         DrawText("MULTIPLAYER MODE", GetScreenWidth()/2 - 120, 100, 30, LIGHTGRAY);
         
-        DrawRectangleRec(btnHost, CheckCollisionPointRec(mouse, btnHost) ? LIGHTGRAY : GRAY);
+        DrawRectangleRec(btnHost, CheckCollisionPointRec(mousePos, btnHost) ? LIGHTGRAY : GRAY);
         DrawText("HOST GAME", btnHost.x + 40, btnHost.y + 15, 20, BLACK);
 
-        DrawRectangleRec(btnJoin, CheckCollisionPointRec(mouse, btnJoin) ? LIGHTGRAY : GRAY);
+        DrawRectangleRec(btnJoin, CheckCollisionPointRec(mousePos, btnJoin) ? LIGHTGRAY : GRAY);
         DrawText("JOIN GAME", btnJoin.x + 45, btnJoin.y + 15, 20, BLACK);
+
+        Color btnColor = isMouseOver ? LIGHTGRAY : GRAY;
+        Color textColor = isMouseOver ? BLACK : WHITE;
+
+        DrawRectangleRec(btnMenuRect, btnColor);
+        DrawRectangleLinesEx(btnMenuRect, 2, WHITE);
+
+        int textWidth = MeasureText("MENU", 20);
+        int textX = btnMenuRect.x + (btnMenuRect.width - textWidth) / 2;
+        int textY = btnMenuRect.y + (btnMenuRect.height - 20) / 2;
+        DrawText("MENU", textX, textY, 20, textColor);
         
-        DrawText("[ESC] Back", 20, 20, 20, WHITE);
         EndDrawing();
         
         if (IsKeyPressed(KEY_ESCAPE)) return std::make_unique<StateMenu>();
@@ -82,23 +101,36 @@ std::unique_ptr<IState> StateTetrisOnline::Update() {
     }
 
     if (currentPhase == OnlinePhase::WAITING_HOST) {
+
+        BeginDrawing();
+        ClearBackground(BLACK);
+        DrawText("WAITING FOR OPPONENT...", 170, 30, 20, LIGHTGRAY);
+
+        localViewer->Draw();
+
+        Color btnColor = isMouseOver ? LIGHTGRAY : GRAY;
+        Color textColor = isMouseOver ? BLACK : WHITE;
+
+        DrawRectangleRec(btnMenuRect, btnColor);
+        DrawRectangleLinesEx(btnMenuRect, 2, WHITE);
+
+        int textWidth = MeasureText("MENU", 20);
+        int textX = btnMenuRect.x + (btnMenuRect.width - textWidth) / 2;
+        int textY = btnMenuRect.y + (btnMenuRect.height - 20) / 2;
+        DrawText("MENU", textX, textY, 20, textColor);
+
+        EndDrawing();
+
         GamePacket dummy;
         network.ReceivePacket(dummy); 
         if (network.IsConnected()) {
             currentPhase = OnlinePhase::PLAYING;
+            localController.resetGame();
         }
 
-        BeginDrawing();
-        ClearBackground(BLACK);
-        DrawText("HOSTING...", 200, 300, 30, YELLOW);
-        DrawText("Waiting for player connection...", 180, 350, 20, WHITE);
-        DrawText("Your Port: 12345", 220, 400, 20, GRAY);
-        DrawText("[ESC] Cancel", 20, 20, 20, WHITE);
-        EndDrawing();
-
-        if (IsKeyPressed(KEY_ESCAPE)) return std::make_unique<StateMenu>();
         return nullptr;
     }
+    
     if (currentPhase == OnlinePhase::TYPE_IP) {
         int key = GetCharPressed();
         while (key > 0) {
@@ -121,19 +153,19 @@ std::unique_ptr<IState> StateTetrisOnline::Update() {
         }
 
         BeginDrawing();
+
         ClearBackground(BLACK);
+
         DrawText("ENTER HOST IP", 200, 250, 30, GREEN);
         DrawRectangle(200, 330, 200, 30, LIGHTGRAY);
         DrawText(ipInput, 210, 335, 20, BLACK);
         DrawText("Press ENTER to Connect", 200, 380, 20, GRAY);
-        DrawText("[ESC] Cancel", 20, 20, 20, WHITE);
-        EndDrawing();
 
-        if (IsKeyPressed(KEY_ESCAPE)) return std::make_unique<StateMenu>();
-        return nullptr;
+        EndDrawing();
     }
 
     localController.GameLoop();
+
     if(IsKeyDown(KEY_LEFT)) localController.moveLeft();
     else if(IsKeyDown(KEY_RIGHT)) localController.moveRight();
     else if(IsKeyDown(KEY_UP)) localController.rotate();
@@ -141,7 +173,7 @@ std::unique_ptr<IState> StateTetrisOnline::Update() {
     
     SyncGame();
     BeginDrawing();
-    ClearBackground(DARKGRAY);
+    ClearBackground(BLACK);
 
     localViewer->Draw();
     remoteViewer->Draw();
@@ -152,6 +184,20 @@ std::unique_ptr<IState> StateTetrisOnline::Update() {
     if (localController.isGameOver()) {
         DrawText("YOU LOST!", 100, 300, 40, RED);
     }
+    if (remoteController.isGameOver()) {
+        DrawText("YOU WIN!", 450, 300, 40, GREEN);
+    }
+
+    Color btnColor = isMouseOver ? LIGHTGRAY : GRAY;
+    Color textColor = isMouseOver ? BLACK : WHITE;
+
+    DrawRectangleRec(btnMenuRect, btnColor);
+    DrawRectangleLinesEx(btnMenuRect, 2, WHITE);
+
+    int textWidth = MeasureText("MENU", 20);
+    int textX = btnMenuRect.x + (btnMenuRect.width - textWidth) / 2;
+    int textY = btnMenuRect.y + (btnMenuRect.height - 20) / 2;
+    DrawText("MENU", textX, textY, 20, textColor);
 
     EndDrawing();
 
