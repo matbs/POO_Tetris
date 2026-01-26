@@ -25,7 +25,7 @@ void StateTetrisOnline::SyncGame() {
     myPacket.nextTetromino = localController.getNextTetromino();
     myPacket.gameOver = localController.isGameOver();
     myPacket.lifes = localController.getLifes();
-    
+
     for(int i=0; i<20; i++) 
         for(int j=0; j<10; j++) 
             myPacket.board[i][j] = localController.getCell(i, j);
@@ -116,6 +116,7 @@ std::unique_ptr<IState> StateTetrisOnline::Update() {
         BeginDrawing();
         ClearBackground(BLACK);
         DrawText("WAITING FOR OPPONENT...", 170, 30, 20, LIGHTGRAY);
+        DrawText(("YOUR IP: " + network.GetCurrentIP()).c_str(), 200, 60, 20, GRAY);
 
         localViewer->Draw();
 

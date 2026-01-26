@@ -1,7 +1,12 @@
 #pragma once
 
+#define _WINSOCK_DEPRECATED_NO_WARNINGS 
+#define _CRT_SECURE_NO_WARNINGS
+
+#include <iostream>
+#include <cstring>
+
 #include <vector>
-#include <string>
 #include <cstring>
 
 #include "../models/Tetrominos.h"
@@ -11,10 +16,14 @@
     #include <ws2tcpip.h>
     #pragma comment(lib, "ws2_32.lib")
 #else
+    #include <sys/types.h>
+    #include <sys/socket.h>
+    #include <netinet/in.h>
     #include <sys/socket.h>
     #include <arpa/inet.h>
     #include <unistd.h>
     #include <fcntl.h>
+    #include <netdb.h>
     #define INVALID_SOCKET -1
     #define SOCKET_ERROR -1
     typedef int SOCKET;
@@ -36,6 +45,10 @@ private:
     bool isServer;
     bool connected;
 
+    std::string currentIP;
+
+    std::string GetLocalIP();
+
 public:
     ControllerServer();
     ~ControllerServer();
@@ -46,6 +59,8 @@ public:
     void SendPacket(const GamePacket& packet);
     
     bool ReceivePacket(GamePacket& packet);
+
+    std::string GetCurrentIP() const { return currentIP; }
 
     bool IsConnected() const { return connected; }
     void Close();
