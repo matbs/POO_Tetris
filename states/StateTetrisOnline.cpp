@@ -224,12 +224,11 @@ if (localController.isGameOver() || remoteController.isGameOver()) {
         DrawRectangleLines(panelX, panelY, panelWidth, panelHeight, LIGHTGRAY);
         DrawRectangleLines(panelX + 2, panelY + 2, panelWidth - 4, panelHeight - 4, DARKGRAY);
         
-        // Centralizar o texto no retângulo
         const char* text = "YOU LOST! WAITING FOR OPPONENT...";
         int fontSize = 20;
         int textWidth = MeasureText(text, fontSize);
         int textX = panelX + (panelWidth - textWidth) / 2;
-        int textY = panelY + (panelHeight - fontSize) / 2; // Aproximadamente centralizado verticalmente
+        int textY = panelY + (panelHeight - fontSize) / 2;
         
         DrawText(text, textX, textY, fontSize, RED);
     }
