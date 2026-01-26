@@ -21,7 +21,11 @@ void StateTetrisOnline::Enter() {
 void StateTetrisOnline::SyncGame() {
     GamePacket myPacket;
     myPacket.score = localController.getScore();
+    myPacket.linesCleared = localController.getLinesCleared();
+    myPacket.nextTetromino = localController.getNextTetromino();
     myPacket.gameOver = localController.isGameOver();
+    myPacket.lifes = localController.getLifes();
+    
     for(int i=0; i<20; i++) 
         for(int j=0; j<10; j++) 
             myPacket.board[i][j] = localController.getCell(i, j);
@@ -29,6 +33,7 @@ void StateTetrisOnline::SyncGame() {
     tetromino t = localController.getCurrentTetromino();
     Points pos = t.getGlobalPosition();
     const Points* pts = t.getBlock();
+
     for(int k=0; k<4; k++) {
         int x = pos.x + pts[k].x;
         int y = pos.y + pts[k].y;
@@ -39,6 +44,12 @@ void StateTetrisOnline::SyncGame() {
 
     GamePacket remotePacket;
     while (network.ReceivePacket(remotePacket)) {
+        remoteController.setScore(remotePacket.score);
+        remoteController.setLinesCleared(remotePacket.linesCleared);
+        remoteController.setNextTetromino(remotePacket.nextTetromino);
+        remoteController.setGameOver(remotePacket.gameOver);
+        remoteController.setLifes(remotePacket.lifes);
+        
         for(int i=0; i<20; i++) 
             for(int j=0; j<10; j++) 
                 remoteController.setCell(i, j, remotePacket.board[i][j]); 
@@ -130,7 +141,7 @@ std::unique_ptr<IState> StateTetrisOnline::Update() {
 
         return nullptr;
     }
-    
+
     if (currentPhase == OnlinePhase::TYPE_IP) {
         int key = GetCharPressed();
         while (key > 0) {
@@ -200,8 +211,6 @@ std::unique_ptr<IState> StateTetrisOnline::Update() {
     DrawText("MENU", textX, textY, 20, textColor);
 
     EndDrawing();
-
-    if (IsKeyPressed(KEY_ESCAPE)) return std::make_unique<StateMenu>();
     
     return nullptr;
 }

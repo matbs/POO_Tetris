@@ -4,6 +4,8 @@
 #include <string>
 #include <cstring>
 
+#include "../models/Tetrominos.h"
+
 #ifdef _WIN32
     #include <winsock2.h>
     #include <ws2tcpip.h>
@@ -19,8 +21,11 @@
 #endif
 
 struct GamePacket {
-    int board[20][10]; 
+    int board[20][10];
+    tetromino nextTetromino;
+    int linesCleared;
     int score;
+    int lifes;
     bool gameOver;
 };
 

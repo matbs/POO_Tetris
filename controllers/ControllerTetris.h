@@ -30,6 +30,7 @@ public:
 
     void GameLoop();
     void Stop() { running = false; }
+    void setGameOver(bool over) { gameOver = over; }
     bool isGameOver() const { return gameOver; }
     
     int getCell(int row, int col) const { return boardCells[row][col]; }
@@ -76,6 +77,7 @@ public:
     void resetGame();
 
     int getLifes() { return lifes; }
+    void setLifes(int l) { lifes = l; }
     int getScore() const { return score; }
     
     private:

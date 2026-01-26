@@ -89,7 +89,6 @@ bool ControllerServer::ReceivePacket(GamePacket& packet) {
             clientSock = tempSock;
             connected = true;
             SetNonBlocking(clientSock);
-            std::cout << "Client Connected!" << std::endl;
         }
     }
 
