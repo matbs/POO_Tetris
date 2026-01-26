@@ -51,10 +51,75 @@ std::unique_ptr<IState> StateTetris::Update() {
     int textY = btnMenuRect.y + (btnMenuRect.height - 20) / 2;
     DrawText("MENU", textX, textY, 20, textColor);
     
-    if (controllerTetris.isGameOver()) {
-        DrawText("GAME OVER", 160, 200, 40, RED);
-        DrawText("Press [R] to Restart", 130, 250, 20, WHITE);
-    }
+if (controllerTetris.isGameOver()) {
+    std::string winnerText;
+    Color textColor;
+    Color highlightColor;
+    
+    DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), {0, 0, 0, 220});
+
+    int panelWidth = 450;
+    int panelHeight = 350;
+    int panelX = (GetScreenWidth() - panelWidth) / 2;
+    int panelY = (GetScreenHeight() - panelHeight) / 2;
+
+    DrawRectangleLines(panelX, panelY, panelWidth, panelHeight, LIGHTGRAY);
+    DrawRectangleLines(panelX + 2, panelY + 2, panelWidth - 4, panelHeight - 4, DARKGRAY);
+
+    int titleWidth = MeasureText("GAME OVER", 32);
+    DrawText("GAME OVER", panelX + (panelWidth - titleWidth) / 2, panelY + 20, 32, MAGENTA);
+
+    DrawRectangle(panelX + 30, panelY + 65, panelWidth - 60, 1, {100, 100, 100, 150});
+
+    int scoresY = panelY + 90;
+
+    int resultY = panelY + 150;
+    int winnerWidth = MeasureText(winnerText.c_str(), 28);
+
+    DrawRectangle(panelX + 50, resultY - 10, panelWidth - 100, 1, {80, 80, 80, 100});
+
+    DrawText(winnerText.c_str(), 
+             panelX + (panelWidth - winnerWidth) / 2, 
+             resultY, 
+             28, 
+             textColor);
+
+    DrawRectangle(panelX + 50, resultY + 40, panelWidth - 100, 1, {80, 80, 80, 100});
+
+    int statsY = resultY + 60;
+    int linesCleared = controllerTetris.getLinesCleared();
+
+    int statSpacing = 150;
+    const char* scoreHeader = "YOUR FINAL SCORE";
+    int headerWidth = MeasureText(scoreHeader, 20);
+    DrawText(scoreHeader, panelX + (panelWidth - headerWidth) / 2, statsY - 100, 20, {200, 200, 200, 200});
+
+    int scoreWidth = MeasureText(TextFormat("Score: %d", controllerTetris.getScore()), 20);
+    DrawText(TextFormat("Score: %d", controllerTetris.getScore()), panelX + (panelWidth - scoreWidth) / 2, statsY - 50, 20, {200, 200, 200, 200});
+
+    int linesWidth = MeasureText(TextFormat("Lines: %d", linesCleared), 20);
+    DrawText(TextFormat("Lines: %d", linesCleared), panelX + (panelWidth - linesWidth) / 2, statsY, 20, {200, 200, 200, 200});
+
+    int instructionsY = panelY + panelHeight - 50;
+
+    DrawRectangle(panelX + 40, instructionsY - 20, panelWidth - 80, 1, {60, 60, 60, 100});
+
+    int restartWidth = MeasureText("R - Restart", 20);
+    int menuWidth = MeasureText("ESC - Exit Game", 20);
+    int totalWidth = restartWidth + 30 + menuWidth;
+    
+    DrawText("R - Restart", 
+             panelX + (panelWidth - totalWidth) / 2, 
+             instructionsY, 
+             20, 
+             GREEN);
+
+    DrawText("ESC - Exit Game", 
+             panelX + (panelWidth - totalWidth) / 2 + restartWidth + 30, 
+             instructionsY, 
+             20, 
+             LIGHTGRAY);
+}
     
     EndDrawing();
     

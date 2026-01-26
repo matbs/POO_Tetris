@@ -78,30 +78,102 @@ std::unique_ptr<IState> StateTetrisMultiplayer::Update() {
     if (winner > 0) {
         std::string winnerText;
         Color textColor;
+        Color highlightColor;
         
         switch (winner) {
             case 1:
-                winnerText = "PLAYER 1 WON!";
+                winnerText = "PLAYER 1 WINS";
                 textColor = RED;
+                highlightColor = RED;
                 break;
             case 2:
-                winnerText = "PLAYER 2 WON!";
+                winnerText = "PLAYER 2 WINS";
                 textColor = BLUE;
+                highlightColor = BLUE;
                 break;
             case 3:
-                winnerText = "TIE!";
+                winnerText = "DRAW";
                 textColor = YELLOW;
+                highlightColor = GRAY;
                 break;
         }
         
         int score1 = controllerTetris1.getScore();
         int score2 = controllerTetris2.getScore();
-        DrawRectangle(140, 10, 300, 210, BLACK);
-        DrawText("FINAL SCORE", 150, 20, 30, WHITE);
-        DrawText(TextFormat("Player 1: %d", score1), 150, 60, 25, RED);
-        DrawText(TextFormat("Player 2: %d", score2), 150, 90, 25, BLUE);
-        DrawText(winnerText.c_str(), 150, 130, 35, textColor);
-        DrawText("Press R to reset the game", 150, 180, 20, GREEN);
+
+        DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), {0, 0, 0, 220});
+
+        int panelWidth = 450;
+        int panelHeight = 350;
+        int panelX = (GetScreenWidth() - panelWidth) / 2;
+        int panelY = (GetScreenHeight() - panelHeight) / 2;
+
+        DrawRectangleLines(panelX, panelY, panelWidth, panelHeight, LIGHTGRAY);
+        DrawRectangleLines(panelX + 2, panelY + 2, panelWidth - 4, panelHeight - 4, DARKGRAY);
+
+        int titleWidth = MeasureText("GAME OVER", 32);
+        DrawText("GAME OVER", panelX + (panelWidth - titleWidth) / 2, panelY + 20, 32, MAGENTA);
+
+        DrawRectangle(panelX + 30, panelY + 65, panelWidth - 60, 1, {100, 100, 100, 150});
+
+        int scoresY = panelY + 90;
+
+        DrawText("P1", panelX + 70, scoresY, 24, RED);
+        DrawRectangle(panelX + 60, scoresY + 30, 60, 2, RED);
+        DrawText(TextFormat("%d", score1), panelX + 65, scoresY + 40, 36, (winner == 1) ? GOLD : WHITE);
+
+        DrawText("VS", panelX + panelWidth/2 - 10, scoresY + 15, 20, LIGHTGRAY);
+
+        DrawText("P2", panelX + panelWidth - 110, scoresY, 24, BLUE);
+        DrawRectangle(panelX + panelWidth - 120, scoresY + 30, 60, 2, BLUE);
+        DrawText(TextFormat("%d", score2), panelX + panelWidth - 115, scoresY + 40, 36, (winner == 2) ? GOLD : WHITE);
+
+        int resultY = panelY + 150;
+        int winnerWidth = MeasureText(winnerText.c_str(), 28);
+
+        DrawRectangle(panelX + 50, resultY - 10, panelWidth - 100, 1, {80, 80, 80, 100});
+
+        DrawText(winnerText.c_str(), 
+                panelX + (panelWidth - winnerWidth) / 2, 
+                resultY, 
+                28, 
+                textColor);
+
+        DrawRectangle(panelX + 50, resultY + 40, panelWidth - 100, 1, {80, 80, 80, 100});
+
+        int statsY = resultY + 60;
+        int lines1 = controllerTetris1.getLinesCleared();
+        int lines2 = controllerTetris2.getLinesCleared();
+
+        int statSpacing = 150;
+        
+        DrawText(TextFormat("Lines: %d", lines1), panelX + 60, statsY, 20, {200, 200, 200, 200});
+        DrawText(TextFormat("Lines: %d", lines2), panelX + panelWidth - 160, statsY, 20, {200, 200, 200, 200});
+
+        int instructionsY = panelY + panelHeight - 50;
+
+        DrawRectangle(panelX + 40, instructionsY - 20, panelWidth - 80, 1, {60, 60, 60, 100});
+
+        int restartWidth = MeasureText("R - Restart", 20);
+        int menuWidth = MeasureText("ESC - Exit Game", 20);
+        int totalWidth = restartWidth + 30 + menuWidth;
+        
+        DrawText("R - Restart", 
+                panelX + (panelWidth - totalWidth) / 2, 
+                instructionsY, 
+                20, 
+                GREEN);
+        
+        DrawText("ESC - Menu", 
+                panelX + (panelWidth - totalWidth) / 2 + restartWidth + 30, 
+                instructionsY, 
+                20, 
+                LIGHTGRAY);
+        
+        if (winner != 3) {
+            int highlightX = (winner == 1) ? panelX + 55 : panelX + panelWidth - 55;
+            DrawRectangle(highlightX, scoresY, 2, 80, {textColor.r, textColor.g, textColor.b, 100});
+        }
     }
 
 
