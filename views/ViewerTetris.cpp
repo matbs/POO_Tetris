@@ -82,7 +82,7 @@ void ViewerTetris::DrawStats() {
     int statsY = boardY + (BOARD_HEIGHT * blockSize) + 10;
     int halfWidth = (BOARD_WIDTH * blockSize) / 2 - 5;
 
-    DrawDisplay(boardX, statsY, halfWidth, 50);
+    DrawDisplay(boardX, statsY, halfWidth, 4*blockSize);
     DrawText("Lines:", boardX + 5, statsY + 2, 20, LIGHTGRAY);
     
     char linesText[20];
@@ -95,19 +95,21 @@ void ViewerTetris::DrawNextPiece() {
     int nextX = boardX + halfWidth + 10;
     int nextY = boardY + (BOARD_HEIGHT * blockSize) + 10;
     
-    DrawDisplay(nextX, nextY, halfWidth, 50);
+    DrawDisplay(nextX, nextY, halfWidth, 4*blockSize);
 
     tetromino next = controller->getNextTetromino();
     const Points* blocks = next.getBlock();
     
-    int drawOffsetX = nextX + 15; 
-    int drawOffsetY = nextY + 10;
+    int drawOffsetX = nextX + blockSize*2; 
+    int drawOffsetY = nextY + blockSize*2;
 
-    if (next.getType() == 0 || next.getType() == 1) {
-        drawOffsetY -= 15;
-    }
     if (next.getType() == 0) {
-        drawOffsetX -= 10;
+        drawOffsetY -= blockSize / 3;
+        drawOffsetX -= 2*blockSize/3;
+    }
+    if (next.getType() == 3) {
+        drawOffsetY -= blockSize;
+        drawOffsetX -= blockSize/3;
     }
 
     for (int i = 0; i < 4; i++) {
@@ -143,7 +145,7 @@ void ViewerTetris::DrawBoard() {
 }
 
 void ViewerTetris::DrawLives() {
-    int startY = boardY + (BOARD_HEIGHT * blockSize) + 70;
+    int startY = boardY + (BOARD_HEIGHT * blockSize) + 4*blockSize + 20;
     
     DrawDisplay(boardX, startY, BOARD_WIDTH * blockSize, 50);
     

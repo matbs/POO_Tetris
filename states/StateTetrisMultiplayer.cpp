@@ -4,8 +4,8 @@
 #include <stdio.h>
 
 void StateTetrisMultiplayer::Enter() {
-    viewer2 = new ViewerTetris(&controllerTetris2, 50, 150, 15);
-    viewer1 = new ViewerTetris(&controllerTetris1, 300, 150, 15);
+    viewer2 = new ViewerTetris(&controllerTetris2, 50, 150, 20);
+    viewer1 = new ViewerTetris(&controllerTetris1, 300, 150, 20);
 }
 
 std::unique_ptr<IState> StateTetrisMultiplayer::Update() {
