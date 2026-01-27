@@ -1,1 +1,3 @@
-game
+game*
+*.txt
+/raylib_win/*

@@ -3,9 +3,8 @@
 #include <iostream>
 
 StateTetrisOnline::StateTetrisOnline() {
-    localViewer = nullptr;
-    remoteViewer = nullptr;
-    currentPhase = OnlinePhase::SELECT_ROLE;
+    viewer2 = nullptr;
+    viewer1 = nullptr;
     isHost = false;
 }
 
@@ -13,24 +12,19 @@ StateTetrisOnline::~StateTetrisOnline() {
     Exit();
 }
 
-void StateTetrisOnline::Enter() {
-    localViewer = new ViewerTetris(&localController, 50, 150, 15);
-    remoteViewer = new ViewerTetris(&remoteController, 400, 150, 15);
-}
-
 void StateTetrisOnline::SyncGame() {
     GamePacket myPacket;
-    myPacket.score = localController.getScore();
-    myPacket.linesCleared = localController.getLinesCleared();
-    myPacket.nextTetromino = localController.getNextTetromino();
-    myPacket.gameOver = localController.isGameOver();
-    myPacket.lifes = localController.getLifes();
+    myPacket.score = controllerTetris2.getScore();
+    myPacket.linesCleared = controllerTetris2.getLinesCleared();
+    myPacket.nextTetromino = controllerTetris2.getNextTetromino();
+    myPacket.gameOver = controllerTetris2.isGameOver();
+    myPacket.lifes = controllerTetris2.getLifes();
 
     for(int i=0; i<20; i++) 
         for(int j=0; j<10; j++) 
-            myPacket.board[i][j] = localController.getCell(i, j);
+            myPacket.board[i][j] = controllerTetris2.getCell(i, j);
     
-    tetromino t = localController.getCurrentTetromino();
+    tetromino t = controllerTetris2.getCurrentTetromino();
     Points pos = t.getGlobalPosition();
     const Points* pts = t.getBlock();
 
@@ -43,117 +37,20 @@ void StateTetrisOnline::SyncGame() {
     network.SendPacket(myPacket);
 
     GamePacket remotePacket;
+    
     while (network.ReceivePacket(remotePacket)) {
-        remoteController.setScore(remotePacket.score);
-        remoteController.setLinesCleared(remotePacket.linesCleared);
-        remoteController.setNextTetromino(remotePacket.nextTetromino);
-        remoteController.setGameOver(remotePacket.gameOver);
-        remoteController.setLifes(remotePacket.lifes);
+        controllerTetris1.setScore(remotePacket.score);
+        controllerTetris1.setLinesCleared(remotePacket.linesCleared);
+        controllerTetris1.setNextTetromino(remotePacket.nextTetromino);
+        controllerTetris1.setGameOver(remotePacket.gameOver);
+        controllerTetris1.setLifes(remotePacket.lifes);
         
         for(int i=0; i<20; i++) 
             for(int j=0; j<10; j++) 
-                remoteController.setCell(i, j, remotePacket.board[i][j]); 
+                controllerTetris1.setCell(i, j, remotePacket.board[i][j]); 
     }
 }
-
-void StateTetrisOnline::DrawWaitOponnent(int localScore, int remoteScore, bool localWon, bool remoteWon, bool tie) {
-        DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), {0, 0, 0, 220});
-        int panelWidth = 400;
-        int panelHeight = 200;
-        int panelX = (GetScreenWidth() - panelWidth) / 2;
-        int panelY = (GetScreenHeight() - panelHeight) / 2;
-        
-        DrawRectangleLines(panelX, panelY, panelWidth, panelHeight, LIGHTGRAY);
-        DrawRectangleLines(panelX + 2, panelY + 2, panelWidth - 4, panelHeight - 4, DARKGRAY);
-        
-        const char* text = "YOU LOST! WAITING FOR OPPONENT...";
-        int fontSize = 20;
-        int textWidth = MeasureText(text, fontSize);
-        int textX = panelX + (panelWidth - textWidth) / 2;
-        int textY = panelY + (panelHeight - fontSize) / 2;
-        
-        DrawText(text, textX, textY, fontSize, RED);
-    }
     
-
-void StateTetrisOnline::DrawEndScreen(int localScore, int remoteScore, bool localWon, bool remoteWon, bool tie) {
-        DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), {0, 0, 0, 220});
-
-        int panelWidth = 500;
-        int panelHeight = 400;
-        int panelX = (GetScreenWidth() - panelWidth) / 2;
-        int panelY = (GetScreenHeight() - panelHeight) / 2;
-
-        DrawRectangleLines(panelX, panelY, panelWidth, panelHeight, LIGHTGRAY);
-        DrawRectangleLines(panelX + 2, panelY + 2, panelWidth - 4, panelHeight - 4, DARKGRAY);
-
-        int titleWidth = MeasureText("GAME OVER", 32);
-        DrawText("GAME OVER", panelX + (panelWidth - titleWidth) / 2, panelY + 20, 32, MAGENTA);
-
-        DrawRectangle(panelX + 30, panelY + 65, panelWidth - 60, 1, {100, 100, 100, 150});
-
-        std::string resultText;
-        Color resultColor;
-        
-        if (tie) {
-            resultText = "IT'S A TIE!";
-            resultColor = YELLOW;
-        } else if (localWon) {
-            resultText = "VICTORY!";
-            resultColor = GREEN;
-        } else {
-            resultText = "DEFEAT!";
-            resultColor = RED;
-        }
-
-        int resultWidth = MeasureText(resultText.c_str(), 36);
-        DrawText(resultText.c_str(), panelX + (panelWidth - resultWidth) / 2, panelY + 90, 36, resultColor);
-
-        std::string scoreMessage;
-        if (tie) {
-            scoreMessage = TextFormat("Both players scored %d points!", localScore);
-        } else if (localWon) {
-            scoreMessage = TextFormat("You won by %d points!", localScore - remoteScore);
-        } else {
-            scoreMessage = TextFormat("You lost by %d points!", remoteScore - localScore);
-        }
-        
-        int messageWidth = MeasureText(scoreMessage.c_str(), 20);
-        DrawText(scoreMessage.c_str(), panelX + (panelWidth - messageWidth) / 2, panelY + 140, 20, LIGHTGRAY);
-
-        DrawRectangle(panelX + 50, panelY + 170, panelWidth - 100, 1, {80, 80, 80, 100});
-
-        int statsY = panelY + 190;
-
-        DrawText("SCOREBOARD", panelX + (panelWidth - MeasureText("SCOREBOARD", 24)) / 2, statsY, 24, LIGHTGRAY);
-
-        int scoresY = statsY + 40;
-
-        Color localScoreColor = localWon ? GREEN : (tie ? YELLOW : LIGHTGRAY);
-        Color remoteScoreColor = remoteWon ? GREEN : (tie ? YELLOW : LIGHTGRAY);
-
-        int scorePanelWidth = 200;
-        int leftScoreX = panelX + (panelWidth/2 - scorePanelWidth - 20);
-        int rightScoreX = panelX + (panelWidth/2 + 20);
-
-        DrawText("YOUR SCORE", leftScoreX, scoresY, 18, LIGHTGRAY);
-        DrawText(TextFormat("%d", localScore), 
-                leftScoreX + (scorePanelWidth - MeasureText(TextFormat("%d", localScore), 28)) / 2, 
-                scoresY + 30, 28, localScoreColor);
-
-        DrawText("OPPONENT SCORE", rightScoreX, scoresY, 18, LIGHTGRAY);
-        DrawText(TextFormat("%d", remoteScore), 
-                rightScoreX + (scorePanelWidth - MeasureText(TextFormat("%d", remoteScore), 28)) / 2, 
-                scoresY + 30, 28, remoteScoreColor);
-
-        DrawRectangle(panelX + panelWidth/2 - 1, scoresY - 10, 2, 80, {100, 100, 100, 150});
-
-        int linesY = scoresY + 70;
-        DrawText(TextFormat("Lines: %d", localController.getLinesCleared()), leftScoreX, linesY, 18, {200, 200, 200, 200});
-        DrawText(TextFormat("Lines: %d", remoteController.getLinesCleared()), rightScoreX, linesY, 18, {200, 200, 200, 200});
-
-        DrawRectangle(panelX + 40, panelY + panelHeight - 70, panelWidth - 80, 1, {60, 60, 60, 100});
-}
 
 std::unique_ptr<IState> StateTetrisOnline::Update() {
     Rectangle btnMenuRect = { 50, 20, 100, 40 };
@@ -206,17 +103,18 @@ std::unique_ptr<IState> StateTetrisOnline::Update() {
         DrawText("WAITING FOR OPPONENT...", 170, 30, 20, LIGHTGRAY);
         DrawText(("YOUR IP: " + network.GetCurrentIP()).c_str(), 200, 60, 20, GRAY);
 
-        localViewer->Draw();
+        viewer2->Draw();
 
         DrawButton(btnMenuRect, "MENU", isMouseOver);
 
         EndDrawing();
 
         GamePacket dummy;
+
         network.ReceivePacket(dummy); 
         if (network.IsConnected()) {
             currentPhase = OnlinePhase::PLAYING;
-            localController.resetGame();
+            controllerTetris2.resetGame();
         }
 
         return nullptr;
@@ -256,19 +154,19 @@ std::unique_ptr<IState> StateTetrisOnline::Update() {
         EndDrawing();
     }
     else if (currentPhase == OnlinePhase::PLAYING) {
-        localController.GameLoop();
+        controllerTetris2.GameLoop();
 
-        if(IsKeyDown(KEY_LEFT)) localController.moveLeft();
-        else if(IsKeyDown(KEY_RIGHT)) localController.moveRight();
-        else if(IsKeyDown(KEY_UP)) localController.rotate();
-        else if(IsKeyDown(KEY_DOWN)) localController.moveDown();
+        if(IsKeyDown(KEY_LEFT)) controllerTetris2.moveLeft();
+        else if(IsKeyDown(KEY_RIGHT)) controllerTetris2.moveRight();
+        else if(IsKeyDown(KEY_UP)) controllerTetris2.rotate();
+        else if(IsKeyDown(KEY_DOWN)) controllerTetris2.moveDown();
         
         SyncGame();
         BeginDrawing();
         ClearBackground(BLACK);
 
-        localViewer->Draw();
-        remoteViewer->Draw();
+        viewer2->Draw();
+        viewer1->Draw();
 
         DrawText("YOU", 50, 50, 20, GREEN);
         DrawText("ENEMY", 400, 50, 20, RED);
@@ -277,15 +175,15 @@ std::unique_ptr<IState> StateTetrisOnline::Update() {
 
         EndDrawing();
 
-        if (localController.isGameOver() && remoteController.isGameOver()) {
+        if (controllerTetris2.isGameOver() && controllerTetris1.isGameOver()) {
             currentPhase = OnlinePhase::GAME_OVER;
         }
     }
 
-    if (currentPhase == OnlinePhase::GAME_OVER) {
-        if (localController.getScore() > remoteController.getScore()) {
+    else if (currentPhase == OnlinePhase::GAME_OVER) {
+        if (controllerTetris2.getScore() > controllerTetris1.getScore()) {
             localWon = true;
-        } else if (remoteController.getScore() > localController.getScore()) {
+        } else if (controllerTetris1.getScore() > controllerTetris2.getScore()) {
             remoteWon = true;
         } else {
             tie = true;
@@ -293,10 +191,10 @@ std::unique_ptr<IState> StateTetrisOnline::Update() {
         BeginDrawing();
         ClearBackground(BLACK);
 
-        localViewer->Draw();
-        remoteViewer->Draw();
-        
-        DrawEndScreen(localController.getScore(), remoteController.getScore(), localWon, remoteWon, tie);
+        viewer2->Draw();
+        viewer1->Draw();
+
+        DrawEndScreen(controllerTetris2.getScore(), controllerTetris1.getScore(), localWon, remoteWon, tie);
         DrawButton(btnMenuRect, "MENU", isMouseOver);
 
         EndDrawing();
@@ -307,6 +205,6 @@ std::unique_ptr<IState> StateTetrisOnline::Update() {
 
 void StateTetrisOnline::Exit() {
     network.Close();
-    if (localViewer) delete localViewer;
-    if (remoteViewer) delete remoteViewer;
+    if (viewer2) delete viewer2;
+    if (viewer1) delete viewer1;
 }

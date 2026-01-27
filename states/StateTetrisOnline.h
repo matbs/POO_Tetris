@@ -1,5 +1,6 @@
 #pragma once
 #include "IState.h"
+#include "StateTetrisMultiplayer.h"
 #include "../controllers/ControllerTetris.h"
 #include "../views/ViewerTetris.h"
 #include "../controllers/ControllerServer.h"
@@ -12,17 +13,11 @@ enum class OnlinePhase {
     GAME_OVER        
 };
 
-class StateTetrisOnline : public IState {
+class StateTetrisOnline : public StateTetrisMultiplayer {
 private:
-    ControllerTetris localController;
-    ViewerTetris* localViewer;
-
-    ControllerTetris remoteController; 
-    ViewerTetris* remoteViewer;
-
     ControllerServer network;
     
-    OnlinePhase currentPhase; 
+    OnlinePhase currentPhase = OnlinePhase::SELECT_ROLE;
     bool isHost;              
     
     char ipInput[16] = "127.0.0.1";
@@ -38,9 +33,6 @@ public:
     StateTetrisOnline();
     ~StateTetrisOnline();
 
-    void Enter() override;
     std::unique_ptr<IState> Update() override;
     void Exit() override;
-    void DrawWaitOponnent(int localScore, int remoteScore, bool localWon, bool remoteWon, bool tie);
-    void DrawEndScreen(int localScore, int remoteScore, bool localWon, bool remoteWon, bool tie);
 };
