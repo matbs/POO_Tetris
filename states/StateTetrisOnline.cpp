@@ -94,16 +94,7 @@ std::unique_ptr<IState> StateTetrisOnline::Update() {
         DrawRectangleRec(btnJoin, CheckCollisionPointRec(mousePos, btnJoin) ? LIGHTGRAY : GRAY);
         DrawText("JOIN GAME", btnJoin.x + 45, btnJoin.y + 15, 20, BLACK);
 
-        Color btnColor = isMouseOver ? LIGHTGRAY : GRAY;
-        Color textColor = isMouseOver ? BLACK : WHITE;
-
-        DrawRectangleRec(btnMenuRect, btnColor);
-        DrawRectangleLinesEx(btnMenuRect, 2, WHITE);
-
-        int textWidth = MeasureText("MENU", 20);
-        int textX = btnMenuRect.x + (btnMenuRect.width - textWidth) / 2;
-        int textY = btnMenuRect.y + (btnMenuRect.height - 20) / 2;
-        DrawText("MENU", textX, textY, 20, textColor);
+        DrawButton(btnMenuRect, "MENU", isMouseOver);
         
         EndDrawing();
         
@@ -120,16 +111,7 @@ std::unique_ptr<IState> StateTetrisOnline::Update() {
 
         localViewer->Draw();
 
-        Color btnColor = isMouseOver ? LIGHTGRAY : GRAY;
-        Color textColor = isMouseOver ? BLACK : WHITE;
-
-        DrawRectangleRec(btnMenuRect, btnColor);
-        DrawRectangleLinesEx(btnMenuRect, 2, WHITE);
-
-        int textWidth = MeasureText("MENU", 20);
-        int textX = btnMenuRect.x + (btnMenuRect.width - textWidth) / 2;
-        int textY = btnMenuRect.y + (btnMenuRect.height - 20) / 2;
-        DrawText("MENU", textX, textY, 20, textColor);
+        DrawButton(btnMenuRect, "MENU", isMouseOver);
 
         EndDrawing();
 
@@ -173,25 +155,33 @@ std::unique_ptr<IState> StateTetrisOnline::Update() {
         DrawText(ipInput, 210, 335, 20, BLACK);
         DrawText("Press ENTER to Connect", 200, 380, 20, GRAY);
 
+        DrawButton(btnMenuRect, "MENU", isMouseOver);
+
         EndDrawing();
     }
 
-    localController.GameLoop();
+    if (currentPhase == OnlinePhase::PLAYING) {
+        localController.GameLoop();
 
-    if(IsKeyDown(KEY_LEFT)) localController.moveLeft();
-    else if(IsKeyDown(KEY_RIGHT)) localController.moveRight();
-    else if(IsKeyDown(KEY_UP)) localController.rotate();
-    else if(IsKeyDown(KEY_DOWN)) localController.moveDown();
+        if(IsKeyDown(KEY_LEFT)) localController.moveLeft();
+        else if(IsKeyDown(KEY_RIGHT)) localController.moveRight();
+        else if(IsKeyDown(KEY_UP)) localController.rotate();
+        else if(IsKeyDown(KEY_DOWN)) localController.moveDown();
+        
+        SyncGame();
+        BeginDrawing();
+        ClearBackground(BLACK);
+
+        localViewer->Draw();
+        remoteViewer->Draw();
+
+        DrawText("YOU", 50, 50, 20, GREEN);
+        DrawText("ENEMY", 400, 50, 20, RED);
+
+        DrawButton(btnMenuRect, "MENU", isMouseOver);
+    }
+
     
-    SyncGame();
-    BeginDrawing();
-    ClearBackground(BLACK);
-
-    localViewer->Draw();
-    remoteViewer->Draw();
-
-    DrawText("YOU", 50, 50, 20, GREEN);
-    DrawText("ENEMY", 400, 50, 20, RED);
 
 if (localController.isGameOver() || remoteController.isGameOver()) {
     int localScore = localController.getScore();
@@ -326,17 +316,6 @@ if (localController.isGameOver() || remoteController.isGameOver()) {
                 LIGHTGRAY);
     }
 }
-
-    Color btnColor = isMouseOver ? LIGHTGRAY : GRAY;
-    Color textColor = isMouseOver ? BLACK : WHITE;
-
-    DrawRectangleRec(btnMenuRect, btnColor);
-    DrawRectangleLinesEx(btnMenuRect, 2, WHITE);
-
-    int textWidth = MeasureText("MENU", 20);
-    int textX = btnMenuRect.x + (btnMenuRect.width - textWidth) / 2;
-    int textY = btnMenuRect.y + (btnMenuRect.height - 20) / 2;
-    DrawText("MENU", textX, textY, 20, textColor);
 
     EndDrawing();
     

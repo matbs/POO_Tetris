@@ -40,16 +40,7 @@ std::unique_ptr<IState> StateTetris::Update() {
 
     viewer->Draw();
 
-    Color btnColor = isMouseOver ? LIGHTGRAY : GRAY;
-    Color textColor = isMouseOver ? BLACK : WHITE;
-
-    DrawRectangleRec(btnMenuRect, btnColor);
-    DrawRectangleLinesEx(btnMenuRect, 2, WHITE);
-
-    int textWidth = MeasureText("MENU", 20);
-    int textX = btnMenuRect.x + (btnMenuRect.width - textWidth) / 2;
-    int textY = btnMenuRect.y + (btnMenuRect.height - 20) / 2;
-    DrawText("MENU", textX, textY, 20, textColor);
+    DrawButton(btnMenuRect, "MENU", isMouseOver);
     
 if (controllerTetris.isGameOver()) {
     std::string winnerText;

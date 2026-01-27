@@ -102,25 +102,10 @@ std::unique_ptr<IState> StateMenu::Update() {
     
     DrawText("TETRIS", GetScreenWidth() / 2 - 150, GetScreenHeight() / 4, 80, LIGHTGRAY);
 
-    DrawRectangleRec(btnSingle, overSingle ? LIGHTGRAY : GRAY);
-    DrawRectangleLinesEx(btnSingle, 2, WHITE);
-    int textWidthSingle = MeasureText("SINGLE PLAYER", 30);
-    DrawText("SINGLE PLAYER", (int)(btnSingle.x + (btnSingle.width - textWidthSingle) / 2), (int)(btnSingle.y + 10), 30, overSingle ? BLACK : LIGHTGRAY);
-
-    DrawRectangleRec(btnMulti, overMulti ? LIGHTGRAY : GRAY);
-    DrawRectangleLinesEx(btnMulti, 2, WHITE);
-    int textWidthMulti = MeasureText("MULTIPLAYER", 30);
-    DrawText("MULTIPLAYER", (int)(btnMulti.x + (btnMulti.width - textWidthMulti) / 2), (int)(btnMulti.y + 10), 30, overMulti ? BLACK : LIGHTGRAY);
-
-    DrawRectangleRec(btnOnline, overOnline ? LIGHTGRAY : GRAY);
-    DrawRectangleLinesEx(btnOnline, 2, WHITE);
-    int textWidthOnline = MeasureText("ONLINE PLAY", 30);
-    DrawText("ONLINE PLAY", (int)(btnOnline.x + (btnOnline.width - textWidthOnline) / 2), (int)(btnOnline.y + 10), 30, overOnline ? BLACK : LIGHTGRAY);
-
-    DrawRectangleRec(btnRank, overRank ? LIGHTGRAY : GRAY);
-    DrawRectangleLinesEx(btnRank, 2, WHITE);
-    int textWidthRank = MeasureText("RANKING", 30);
-    DrawText("RANKING", (int)(btnRank.x + (btnRank.width - textWidthRank) / 2), (int)(btnRank.y + 10), 30, overRank ? BLACK : LIGHTGRAY);
+    DrawButton(btnSingle, "SINGLE PLAYER", overSingle);
+    DrawButton(btnMulti, "MULTIPLAYER", overMulti);
+    DrawButton(btnOnline, "ONLINE PLAY", overOnline);
+    DrawButton(btnRank, "RANKING", overRank);
 
     EndDrawing();
     return nullptr;
