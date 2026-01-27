@@ -37,18 +37,18 @@ void StateTetrisOnline::SyncGame() {
     network.SendPacket(myPacket);
 
     GamePacket remotePacket;
-    
-    while (network.ReceivePacket(remotePacket)) {
+    if (network.PollPacket(remotePacket)) {
         controllerTetris1.setScore(remotePacket.score);
         controllerTetris1.setLinesCleared(remotePacket.linesCleared);
         controllerTetris1.setNextTetromino(remotePacket.nextTetromino);
         controllerTetris1.setGameOver(remotePacket.gameOver);
         controllerTetris1.setLifes(remotePacket.lifes);
-        
-        for(int i=0; i<20; i++) 
-            for(int j=0; j<10; j++) 
-                controllerTetris1.setCell(i, j, remotePacket.board[i][j]); 
+
+        for (int i = 0; i < 20; i++)
+            for (int j = 0; j < 10; j++)
+                controllerTetris1.setCell(i, j, remotePacket.board[i][j]);
     }
+
 }
     
 
@@ -110,12 +110,13 @@ std::unique_ptr<IState> StateTetrisOnline::Update() {
         EndDrawing();
 
         GamePacket dummy;
+        network.PollPacket(dummy);
 
-        network.ReceivePacket(dummy); 
         if (network.IsConnected()) {
             currentPhase = OnlinePhase::PLAYING;
             controllerTetris2.resetGame();
         }
+
 
         return nullptr;
     }

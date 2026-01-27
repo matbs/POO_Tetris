@@ -1,6 +1,71 @@
 #include "ControllerServer.h"
 
-ControllerServer::ControllerServer() : sock(INVALID_SOCKET), clientSock(INVALID_SOCKET), isServer(false), connected(false) {
+void SetNonBlocking(SOCKET s);
+
+void ControllerServer::accepterWorker() {
+    while (running && isServer) {
+        if (clientSock == INVALID_SOCKET) {
+            struct sockaddr_in clientAddr;
+            socklen_t clientLen = sizeof(clientAddr);
+            SOCKET tempSock = accept(sock, (struct sockaddr*)&clientAddr, &clientLen);
+            
+            if (tempSock != INVALID_SOCKET) {
+                clientSock = tempSock;
+                connected = true;
+                SetNonBlocking(clientSock);
+            }
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
+}
+
+void ControllerServer::senderWorker() {
+    GamePacket packet;
+    
+    while (running) {
+        if (outgoingQueue.pop(packet)) { // Consumidor
+            SOCKET target = isServer ? clientSock : sock;
+            if (target != INVALID_SOCKET) {
+                send(target, (char*)&packet, sizeof(GamePacket), 0);
+            }
+        }
+    }
+}
+
+void ControllerServer::receiverWorker() {
+    GamePacket packet;
+    SOCKET target = isServer ? clientSock : sock;
+    
+    while (running) {
+        if (target == INVALID_SOCKET) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+            continue;
+        }
+        
+        int bytesReceived = recv(target, (char*)&packet, sizeof(GamePacket), 0);
+        
+        if (bytesReceived > 0) {
+            incomingQueue.push(packet); // Productor
+        } else if (bytesReceived == 0) {
+            // Closed Connection
+            break;
+        } else {
+            // Error OR non-blocking without data
+#ifdef _WIN32
+            if (WSAGetLastError() != WSAEWOULDBLOCK)
+#else
+            if (errno != EWOULDBLOCK && errno != EAGAIN)
+#endif
+            {
+                break;
+            }
+        }
+        
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    }
+}
+
+ControllerServer::ControllerServer() : sock(INVALID_SOCKET), clientSock(INVALID_SOCKET), isServer(false), connected(false), running(false) {
 #ifdef _WIN32
     WSADATA wsaData;
     WSAStartup(MAKEWORD(2, 2), &wsaData);
@@ -52,6 +117,15 @@ std::string ControllerServer::GetLocalIP() {
 }
 
 void ControllerServer::Close() {
+    running = false;
+
+    incomingQueue.shutdown_queue();
+    outgoingQueue.shutdown_queue();
+
+    if (accepterThread.joinable()) accepterThread.join();
+    if (receiverThread.joinable()) receiverThread.join();
+    if (senderThread.joinable()) senderThread.join();
+
     if (sock != INVALID_SOCKET) {
 #ifdef _WIN32
         closesocket(sock);
@@ -76,7 +150,7 @@ void SetNonBlocking(SOCKET s) {
 #endif
 }
 
-bool ControllerServer::InitServer(int port) {
+bool ControllerServer::InitializeSocket(int port) {
     isServer = true;
     sock = socket(AF_INET, SOCK_STREAM, 0);
     
@@ -99,7 +173,21 @@ bool ControllerServer::InitServer(int port) {
     return true;
 }
 
-bool ControllerServer::ConnectClient(const std::string& ip, int port) {
+
+bool ControllerServer::InitServer(int port) {
+    if (!InitializeSocket(port)) return false;
+    
+    running = true;
+    
+    accepterThread = std::thread(&ControllerServer::accepterWorker, this);
+    
+    receiverThread = std::thread(&ControllerServer::receiverWorker, this);
+    senderThread = std::thread(&ControllerServer::senderWorker, this);
+    
+    return true;
+}
+
+bool ControllerServer::ConnectToServer(const std::string& ip, int port) {
     isServer = false;
     sock = socket(AF_INET, SOCK_STREAM, 0);
     if (sock == INVALID_SOCKET) return false;
@@ -122,29 +210,43 @@ bool ControllerServer::ConnectClient(const std::string& ip, int port) {
     return true;
 }
 
+bool ControllerServer::ConnectClient(const std::string& ip, int port) {
+    if (!ConnectToServer(ip, port)) return false; // Método existente adaptado
+    
+    running = true;
+    
+    // Threads de envio e recebimento (apenas)
+    receiverThread = std::thread(&ControllerServer::receiverWorker, this);
+    senderThread = std::thread(&ControllerServer::senderWorker, this);
+    
+    return true;
+}
+
+
 void ControllerServer::SendPacket(const GamePacket& packet) {
-    SOCKET target = isServer ? clientSock : sock;
-    if (target == INVALID_SOCKET) return;
-
-    send(target, (char*)&packet, sizeof(GamePacket), 0);
+    outgoingQueue.push(packet);
 }
 
-bool ControllerServer::ReceivePacket(GamePacket& packet) {
-    if (isServer && !connected) {
-        struct sockaddr_in clientAddr;
-        socklen_t clientLen = sizeof(clientAddr);
-        SOCKET tempSock = accept(sock, (struct sockaddr*)&clientAddr, &clientLen);
+bool ControllerServer::PollPacket(GamePacket& packet) {
+    return incomingQueue.try_pop(packet); // ver abaixo
+}
+
+// bool ControllerServer::ReceivePacket(GamePacket& packet) {
+//     if (isServer && !connected) {
+//         struct sockaddr_in clientAddr;
+//         socklen_t clientLen = sizeof(clientAddr);
+//         SOCKET tempSock = accept(sock, (struct sockaddr*)&clientAddr, &clientLen);
         
-        if (tempSock != INVALID_SOCKET) {
-            clientSock = tempSock;
-            connected = true;
-            SetNonBlocking(clientSock);
-        }
-    }
+//         if (tempSock != INVALID_SOCKET) {
+//             clientSock = tempSock;
+//             connected = true;
+//             SetNonBlocking(clientSock);
+//         }
+//     }
 
-    SOCKET target = isServer ? clientSock : sock;
-    if (target == INVALID_SOCKET) return false;
+//     SOCKET target = isServer ? clientSock : sock;
+//     if (target == INVALID_SOCKET) return false;
 
-    int bytesReceived = recv(target, (char*)&packet, sizeof(GamePacket), 0);
-    return bytesReceived > 0;
-}
+//     int bytesReceived = recv(target, (char*)&packet, sizeof(GamePacket), 0);
+//     return bytesReceived > 0;
+// }

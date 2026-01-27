@@ -12,7 +12,7 @@
 #include <vector>
 #include <cstring>
 
-#include "../models/Tetrominos.h"
+#include "../models/ThreadQueue.h"
 
 #ifdef _WIN32
     #include <winsock2.h>
@@ -32,15 +32,6 @@
     typedef int SOCKET;
 #endif
 
-struct GamePacket {
-    int board[20][10];
-    tetromino nextTetromino;
-    int linesCleared;
-    int score;
-    int lifes;
-    bool gameOver;
-};
-
 class ControllerServer {
 private:
     SOCKET sock;
@@ -52,16 +43,31 @@ private:
 
     std::string GetLocalIP();
 
+    ThreadSafeQueue incomingQueue;
+    ThreadSafeQueue outgoingQueue;
+
+    std::thread receiverThread;
+    std::thread senderThread;
+    std::thread accepterThread;
+
+    std::atomic<bool> running;
+    
+    void receiverWorker();
+    void senderWorker();
+    void accepterWorker();
+
 public:
     ControllerServer();
     ~ControllerServer();
 
+    bool InitializeSocket(int port);
     bool InitServer(int port);
     bool ConnectClient(const std::string& ip, int port);
-    
+    bool ConnectToServer(const std::string& ip, int port); 
+
     void SendPacket(const GamePacket& packet);
     
-    bool ReceivePacket(GamePacket& packet);
+    bool PollPacket(GamePacket& packet);
 
     std::string GetCurrentIP() const { return currentIP; }
 
