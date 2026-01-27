@@ -100,14 +100,16 @@ void ViewerTetris::DrawNextPiece() {
     tetromino next = controller->getNextTetromino();
     const Points* blocks = next.getBlock();
     
-    int drawOffsetX = nextX + 15; 
-    int drawOffsetY = nextY + 10;
+    int drawOffsetX = nextX + 30; 
+    int drawOffsetY = nextY + 25;
 
-    if (next.getType() == 0 || next.getType() == 1) {
-        drawOffsetY -= 15;
-    }
     if (next.getType() == 0) {
-        drawOffsetX -= 10;
+        drawOffsetY -= blockSize / 3;
+        drawOffsetX -= 2*blockSize/3;
+    }
+    if (next.getType() == 3) {
+        drawOffsetY -= blockSize;
+        drawOffsetX -= 2*blockSize/3;
     }
 
     for (int i = 0; i < 4; i++) {
