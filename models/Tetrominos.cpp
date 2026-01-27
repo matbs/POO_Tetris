@@ -68,10 +68,10 @@ tetromino::tetromino() {
             break;
 
         case 6: // Z 
-            blocks[0] = {-1, 0};
-            blocks[1] = {0, 0};
-            blocks[2] = {0, -1};
-            blocks[3] = {1, -1};
+            blocks[0] = {-1, -1};
+            blocks[1] = {0, -1};
+            blocks[2] = {0, 0};
+            blocks[3] = {1, 0};
 
             positionToBoard = {4, 0};
             break;
