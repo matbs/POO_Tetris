@@ -18,5 +18,13 @@ You must have the raylib development libraries installed on your system.
 
 Use the following command in your terminal to compile the source code and run the game.
 
+### Linux
 ```bash
 g++ ./*/*.cpp main.cpp -lraylib -lGL -lm -lpthread -ldl -lrt -lX11 -o game && ./game
+```
+
+### Windows
+```bash
+x86_64-w64-mingw32-g++ ./*/*.cpp main.cpp -o game.exe     -I./raylib_win/include     -L./raylib_win/lib     -lraylib -lgdi32 -lwinmm -lopengl32 -lws2_32 -static
+```
+

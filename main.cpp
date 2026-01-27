@@ -1,4 +1,4 @@
-#include "raylib.h"
+#include "./raylib.h"
 #include "./states/IState.h"
 #include "./states/StateMenu.h"
 

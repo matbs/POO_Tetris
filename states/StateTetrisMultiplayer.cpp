@@ -70,7 +70,7 @@ std::unique_ptr<IState> StateTetrisMultiplayer::Update() {
 
     BeginDrawing();
 
-    ClearBackground(DARKGRAY);
+    ClearBackground(BLACK);
 
     viewer1->Draw();
     viewer2->Draw();

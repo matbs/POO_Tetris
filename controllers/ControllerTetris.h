@@ -1,5 +1,5 @@
 #pragma once
-#include "raylib.h"
+#include "../raylib.h"
 #include "../models/Tetrominos.h"
 #include <thread>
 #include <chrono>
