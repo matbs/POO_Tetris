@@ -199,7 +199,7 @@ if (localController.isGameOver() || remoteController.isGameOver()) {
     bool localWon = false;
     bool remoteWon = false;
     bool tie = false;
-    
+
     if (localController.isGameOver() && remoteController.isGameOver()) {
         if (localScore > remoteScore) {
             localWon = true;
@@ -208,13 +208,42 @@ if (localController.isGameOver() || remoteController.isGameOver()) {
         } else {
             tie = true;
         }
-    } else if (localController.isGameOver()) {
-        remoteWon = true;
-    } else if (remoteController.isGameOver()) {
-        localWon = true;
+        } else if (localController.isGameOver()) {
+            remoteWon = true;
+        } else if (remoteController.isGameOver()) {
+            localWon = true;
+        }
+        if(localController.isGameOver() && !remoteController.isGameOver()){
+            DrawWaitOponnent(localScore, remoteScore, localWon, remoteWon, tie);
+        }
+        if(localController.isGameOver() && remoteController.isGameOver()){
+            DrawEndScreen(localScore, remoteScore, localWon, remoteWon, tie);
+        }
     }
 
-    if(localController.isGameOver() && !remoteController.isGameOver()){
+    Color btnColor = isMouseOver ? LIGHTGRAY : GRAY;
+    Color textColor = isMouseOver ? BLACK : WHITE;
+
+    DrawRectangleRec(btnMenuRect, btnColor);
+    DrawRectangleLinesEx(btnMenuRect, 2, WHITE);
+
+    int textWidth = MeasureText("MENU", 20);
+    int textX = btnMenuRect.x + (btnMenuRect.width - textWidth) / 2;
+    int textY = btnMenuRect.y + (btnMenuRect.height - 20) / 2;
+    DrawText("MENU", textX, textY, 20, textColor);
+
+    EndDrawing();
+    
+    return nullptr;
+}
+
+void StateTetrisOnline::Exit() {
+    network.Close();
+    if (localViewer) delete localViewer;
+    if (remoteViewer) delete remoteViewer;
+}
+
+void StateTetrisOnline::DrawWaitOponnent(int localScore, int remoteScore, bool localWon, bool remoteWon, bool tie) {
         DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), {0, 0, 0, 220});
         int panelWidth = 400;
         int panelHeight = 200;
@@ -234,8 +263,7 @@ if (localController.isGameOver() || remoteController.isGameOver()) {
     }
     
 
-    if (localController.isGameOver() && remoteController.isGameOver())
-    {
+void StateTetrisOnline::DrawEndScreen(int localScore, int remoteScore, bool localWon, bool remoteWon, bool tie) {
         DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), {0, 0, 0, 220});
 
         int panelWidth = 500;
@@ -312,39 +340,4 @@ if (localController.isGameOver() || remoteController.isGameOver()) {
         DrawText(TextFormat("Lines: %d", remoteController.getLinesCleared()), rightScoreX, linesY, 18, {200, 200, 200, 200});
 
         DrawRectangle(panelX + 40, panelY + panelHeight - 70, panelWidth - 80, 1, {60, 60, 60, 100});
-
-        int instructionsY = panelY + panelHeight - 40;
-
-        int restartWidth = MeasureText("R - Restart Match", 20);
-        int menuWidth = MeasureText("ESC - Main Menu", 20);
-        int totalWidth = restartWidth + 30 + menuWidth;
-        
-        DrawText("ESC - Exit Game", 
-                panelX + (panelWidth - totalWidth) / 2 + 120, 
-                instructionsY, 
-                20, 
-                LIGHTGRAY);
-    }
-}
-
-    Color btnColor = isMouseOver ? LIGHTGRAY : GRAY;
-    Color textColor = isMouseOver ? BLACK : WHITE;
-
-    DrawRectangleRec(btnMenuRect, btnColor);
-    DrawRectangleLinesEx(btnMenuRect, 2, WHITE);
-
-    int textWidth = MeasureText("MENU", 20);
-    int textX = btnMenuRect.x + (btnMenuRect.width - textWidth) / 2;
-    int textY = btnMenuRect.y + (btnMenuRect.height - 20) / 2;
-    DrawText("MENU", textX, textY, 20, textColor);
-
-    EndDrawing();
-    
-    return nullptr;
-}
-
-void StateTetrisOnline::Exit() {
-    network.Close();
-    if (localViewer) delete localViewer;
-    if (remoteViewer) delete remoteViewer;
 }
