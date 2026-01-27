@@ -155,20 +155,13 @@ std::unique_ptr<IState> StateTetrisMultiplayer::Update() {
         DrawRectangle(panelX + 40, instructionsY - 20, panelWidth - 80, 1, {60, 60, 60, 100});
 
         int restartWidth = MeasureText("R - Restart", 20);
-        int menuWidth = MeasureText("ESC - Exit Game", 20);
-        int totalWidth = restartWidth + 30 + menuWidth;
+        int totalWidth = restartWidth;
         
         DrawText("R - Restart", 
-                panelX + (panelWidth - totalWidth) / 2, 
-                instructionsY, 
-                20, 
-                GREEN);
-        
-        DrawText("ESC - Menu", 
-                panelX + (panelWidth - totalWidth) / 2 + restartWidth + 30, 
-                instructionsY, 
-                20, 
-                LIGHTGRAY);
+                 panelX + (panelWidth - totalWidth) / 2, 
+                 instructionsY, 
+                 20, 
+                 LIGHTGRAY);
         
         if (winner != 3) {
             int highlightX = (winner == 1) ? panelX + 55 : panelX + panelWidth - 55;

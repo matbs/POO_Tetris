@@ -48,14 +48,14 @@ void ViewerTetris::DrawBlock(int x, int y, int size, Color baseColor, int offset
 }
 
 void ViewerTetris::DrawHeart(int x, int y, int size, Color color) {
-    DrawTriangle(
-        { (float)(x + size / 2), (float)(y + size) },
-        { (float)(x),            (float)(y + size / 2) },
-        { (float)(x + size),     (float)(y + size / 2) },
-        color
-    );
     DrawCircle(x + size / 4, y + size / 4, size / 4, color);
     DrawCircle(x + 3 * size / 4, y + size / 4, size / 4, color);
+    DrawTriangle(
+        { (float)(x - 1),                  (float)y + (float)size * 0.25f },
+        { (float)x + (float)size * 0.5f,   (float)y + (float)size * 0.7f },         
+        { (float)(x + 1) + (float)size,          (float)y + (float)size * 0.25f },
+        color
+    );
 }
 
 void ViewerTetris::DrawDisplay(int posX, int posY, int sizeX, int sizeY) {
@@ -153,12 +153,11 @@ void ViewerTetris::DrawLives() {
     }
     DrawText("Player", boardX + 5, startY + 5, 20, LIGHTGRAY);
     for (int i = 0; i < controller->getLifes(); i++) {
-        DrawHeart(boardX + 5 + (i * 30), startY + 30, 20, RED);
+        DrawHeart(boardX + 10 + (i * 30), startY + 30, 20, RED);
     }
 }
 
 void ViewerTetris::Draw() {
-    
     DrawScore();
     DrawBoard();
     DrawStats();
