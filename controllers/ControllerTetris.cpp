@@ -224,7 +224,7 @@ void ControllerTetris::dropDown() {
         this->spawnTetromino(nextTetromino);
         currentTetromino = nextTetromino;
 
-        if (checkCollision(currentTetromino, 0)) {
+        if (checkCollision(currentTetromino, 1)) {
             if (lifes > 0) {
                 lifes--;
                 resetBoard();
