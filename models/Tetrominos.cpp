@@ -20,26 +20,26 @@ tetromino::tetromino() {
     switch (type) {
 
         case 0: // I
-            blocks[0] = {0, 2};
-            blocks[1] = {1, 2};
-            blocks[2] = {2, 2};
-            blocks[3] = {3, 2};
+            blocks[0] = {-1, 0};
+            blocks[1] = {0, 0};
+            blocks[2] = {1, 0};
+            blocks[3] = {2, 0};
             positionToBoard = {3, 0};
             break;
 
         case 1: // J
-            blocks[0] = {0, 1};
-            blocks[1] = {0, 2};
-            blocks[2] = {1, 1};
-            blocks[3] = {2, 1};
+            blocks[0] = {-1, -1};
+            blocks[1] = {-1, 0};
+            blocks[2] = {0, 0};
+            blocks[3] = {1, 0};
             positionToBoard = {4, 0};
             break;
 
         case 2: // L
-            blocks[0] = {2, 0};
-            blocks[1] = {0, 1};
-            blocks[2] = {1, 1};
-            blocks[3] = {2, 1};
+            blocks[0] = {-1, 0};
+            blocks[1] = {0, 0};
+            blocks[2] = {1, 0};
+            blocks[3] = {1, -1};
             positionToBoard = {4, 0};
             break;
 
@@ -52,25 +52,26 @@ tetromino::tetromino() {
             break;
 
         case 4: // S
-            blocks[0] = {0, 0};
-            blocks[1] = {1, 0};
-            blocks[2] = {1, 1};
-            blocks[3] = {2, 1};
+            blocks[0] = {-1, 0};
+            blocks[1] = {0, 0};
+            blocks[2] = {0, -1};
+            blocks[3] = {1, -1};
             positionToBoard = {4, 0};
             break;
 
         case 5: // T
-            blocks[0] = {0, 1};
-            blocks[1] = {1, 0};
-            blocks[2] = {1, 1};
-            blocks[3] = {2, 1};
+            blocks[0] = {-1, 0};
+            blocks[1] = {0, 0};
+            blocks[2] = {1, 0};
+            blocks[3] = {0, -1};
             positionToBoard = {4, 0};
             break;
+
         case 6: // Z 
-            blocks[0] = {0, 1};
-            blocks[1] = {1, 0};
-            blocks[2] = {1, 1};
-            blocks[3] = {2, 0};
+            blocks[0] = {-1, 0};
+            blocks[1] = {0, 0};
+            blocks[2] = {0, -1};
+            blocks[3] = {1, -1};
 
             positionToBoard = {4, 0};
             break;

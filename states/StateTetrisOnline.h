@@ -36,4 +36,6 @@ public:
     void Enter() override;
     std::unique_ptr<IState> Update() override;
     void Exit() override;
+    void DrawWaitOponnent(int localScore, int remoteScore, bool localWon, bool remoteWon, bool tie);
+    void DrawEndScreen(int localScore, int remoteScore, bool localWon, bool remoteWon, bool tie);
 };
