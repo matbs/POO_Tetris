@@ -184,7 +184,6 @@ std::unique_ptr<IState> StateTetrisOnline::Update() {
         BeginDrawing();
         ClearBackground(BLACK);
 
-
         DrawText("MULTIPLAYER MODE", GetScreenWidth()/2 - 120, 100, 30, LIGHTGRAY);
         
         DrawRectangleRec(btnHost, CheckCollisionPointRec(mousePos, btnHost) ? LIGHTGRAY : GRAY);
@@ -200,8 +199,7 @@ std::unique_ptr<IState> StateTetrisOnline::Update() {
         if (IsKeyPressed(KEY_ESCAPE)) return std::make_unique<StateMenu>();
         return nullptr;
     }
-
-    if (currentPhase == OnlinePhase::WAITING_HOST) {
+    else if (currentPhase == OnlinePhase::WAITING_HOST) {
 
         BeginDrawing();
         ClearBackground(BLACK);
@@ -223,8 +221,7 @@ std::unique_ptr<IState> StateTetrisOnline::Update() {
 
         return nullptr;
     }
-
-    if (currentPhase == OnlinePhase::TYPE_IP) {
+    else if (currentPhase == OnlinePhase::TYPE_IP) {
         int key = GetCharPressed();
         while (key > 0) {
             if ((key >= 46 && key <= 57) && (ipLetterCount < 15)) {
@@ -258,8 +255,7 @@ std::unique_ptr<IState> StateTetrisOnline::Update() {
 
         EndDrawing();
     }
-
-    if (currentPhase == OnlinePhase::PLAYING) {
+    else if (currentPhase == OnlinePhase::PLAYING) {
         localController.GameLoop();
 
         if(IsKeyDown(KEY_LEFT)) localController.moveLeft();
@@ -278,50 +274,33 @@ std::unique_ptr<IState> StateTetrisOnline::Update() {
         DrawText("ENEMY", 400, 50, 20, RED);
 
         DrawButton(btnMenuRect, "MENU", isMouseOver);
+
+        EndDrawing();
+
+        if (localController.isGameOver() && remoteController.isGameOver()) {
+            currentPhase = OnlinePhase::GAME_OVER;
+        }
     }
 
-    
-
-if (localController.isGameOver() || remoteController.isGameOver()) {
-    int localScore = localController.getScore();
-    int remoteScore = remoteController.getScore();
-    bool localWon = false;
-    bool remoteWon = false;
-    bool tie = false;
-
-    if (localController.isGameOver() && remoteController.isGameOver()) {
-        if (localScore > remoteScore) {
+    if (currentPhase == OnlinePhase::GAME_OVER) {
+        if (localController.getScore() > remoteController.getScore()) {
             localWon = true;
-        } else if (remoteScore > localScore) {
+        } else if (remoteController.getScore() > localController.getScore()) {
             remoteWon = true;
         } else {
             tie = true;
         }
-        } else if (localController.isGameOver()) {
-            remoteWon = true;
-        } else if (remoteController.isGameOver()) {
-            localWon = true;
-        }
-        if(localController.isGameOver() && !remoteController.isGameOver()){
-            DrawWaitOponnent(localScore, remoteScore, localWon, remoteWon, tie);
-        }
-        if(localController.isGameOver() && remoteController.isGameOver()){
-            DrawEndScreen(localScore, remoteScore, localWon, remoteWon, tie);
-        }
+        BeginDrawing();
+        ClearBackground(BLACK);
+
+        localViewer->Draw();
+        remoteViewer->Draw();
+        
+        DrawEndScreen(localController.getScore(), remoteController.getScore(), localWon, remoteWon, tie);
+        DrawButton(btnMenuRect, "MENU", isMouseOver);
+
+        EndDrawing();
     }
-
-    Color btnColor = isMouseOver ? LIGHTGRAY : GRAY;
-    Color textColor = isMouseOver ? BLACK : WHITE;
-
-    DrawRectangleRec(btnMenuRect, btnColor);
-    DrawRectangleLinesEx(btnMenuRect, 2, WHITE);
-
-    int textWidth = MeasureText("MENU", 20);
-    int textX = btnMenuRect.x + (btnMenuRect.width - textWidth) / 2;
-    int textY = btnMenuRect.y + (btnMenuRect.height - 20) / 2;
-    DrawText("MENU", textX, textY, 20, textColor);
-
-    EndDrawing();
     
     return nullptr;
 }

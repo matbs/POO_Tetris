@@ -8,7 +8,8 @@ enum class OnlinePhase {
     SELECT_ROLE,   
     WAITING_HOST,   
     TYPE_IP,        
-    PLAYING         
+    PLAYING,
+    GAME_OVER        
 };
 
 class StateTetrisOnline : public IState {
@@ -28,6 +29,10 @@ private:
     int ipLetterCount = 9;
 
     void SyncGame();
+
+    bool tie = false;
+    bool localWon = false;
+    bool remoteWon = false;
 
 public:
     StateTetrisOnline();
