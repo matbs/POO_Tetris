@@ -36,7 +36,7 @@ std::unique_ptr<IState> StateTetris::Update() {
 
     BeginDrawing();
 
-    ClearBackground(DARKGRAY);
+    ClearBackground(BLACK);
 
     viewer->Draw();
 

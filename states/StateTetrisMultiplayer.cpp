@@ -6,6 +6,11 @@
 void StateTetrisMultiplayer::Enter() {
     viewer2 = new ViewerTetris(&controllerTetris2, 50, 150, 20);
     viewer1 = new ViewerTetris(&controllerTetris1, 300, 150, 20);
+
+    tetromino ghostPiece;
+    ghostPiece.setGlobalPosition(-100, -100);
+    
+    controllerTetris1.setCurrentTetromino(ghostPiece);
 }
 
 std::unique_ptr<IState> StateTetrisMultiplayer::Update() {

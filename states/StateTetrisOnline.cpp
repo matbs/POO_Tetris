@@ -81,7 +81,7 @@ std::unique_ptr<IState> StateTetrisOnline::Update() {
         BeginDrawing();
         ClearBackground(BLACK);
 
-        DrawText("MULTIPLAYER MODE", GetScreenWidth()/2 - 120, 100, 30, LIGHTGRAY);
+        DrawText("MULTIPLAYER MODE", GetScreenWidth()/2 - MeasureText("MULTIPLAYER MODE", 30)/2, 250, 30, LIGHTGRAY);
         
         DrawRectangleRec(btnHost, CheckCollisionPointRec(mousePos, btnHost) ? LIGHTGRAY : GRAY);
         DrawText("HOST GAME", btnHost.x + 40, btnHost.y + 15, 20, BLACK);
@@ -145,10 +145,10 @@ std::unique_ptr<IState> StateTetrisOnline::Update() {
 
         ClearBackground(BLACK);
 
-        DrawText("ENTER HOST IP", 200, 250, 30, GREEN);
-        DrawRectangle(200, 330, 200, 30, LIGHTGRAY);
-        DrawText(ipInput, 210, 335, 20, BLACK);
-        DrawText("Press ENTER to Connect", 200, 380, 20, GRAY);
+        DrawText("ENTER HOST IP", GetScreenWidth()/2 - MeasureText("ENTER HOST IP", 30)/2, 250, 30, GREEN);
+        DrawRectangle(GetScreenWidth()/2 - 100, 330, 200, 40, WHITE);
+        DrawText(ipInput, GetScreenWidth()/2 - 90, 340, 20, BLACK);
+        DrawText("Press ENTER to Connect", GetScreenWidth()/2 - MeasureText("Press ENTER to Connect", 20)/2, 400, 20, GRAY);
 
         DrawButton(btnMenuRect, "MENU", isMouseOver);
 
@@ -169,8 +169,8 @@ std::unique_ptr<IState> StateTetrisOnline::Update() {
         viewer2->Draw();
         viewer1->Draw();
 
-        DrawText("YOU", 50, 50, 20, GREEN);
-        DrawText("ENEMY", 400, 50, 20, RED);
+        DrawText("YOU", 50, 60, 20, GREEN);
+        DrawText("ENEMY", 400, 60, 20, RED);
 
         DrawButton(btnMenuRect, "MENU", isMouseOver);
 
