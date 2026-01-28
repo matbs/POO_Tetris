@@ -25,10 +25,6 @@ private:
 
     void SyncGame();
 
-    bool tie = false;
-    bool localWon = false;
-    bool remoteWon = false;
-
 public:
     StateTetrisOnline();
     ~StateTetrisOnline();

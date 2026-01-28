@@ -11,5 +11,4 @@ public:
     virtual void Exit() = 0;
 
     void DrawButton(Rectangle rect, const char* text, bool isMouseOver);
-    void DrawEndScreen(int localScore, int remoteScore, bool localWon, bool remoteWon, bool tie);
 };

@@ -3,6 +3,55 @@
 
 #include <stdio.h>
 
+void StateTetrisMultiplayer::DrawEndScreen(int p1Score, int p2Score, int winner, std::string resultText, Color resultColor, std::string play1 = "PLAYER 1", std::string play2 = "PLAYER 2") {
+        DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), {0, 0, 0, 220});
+
+        int panelWidth = 500;
+        int panelHeight = 400;
+        int panelX = (GetScreenWidth() - panelWidth) / 2;
+        int panelY = (GetScreenHeight() - panelHeight) / 2;
+
+        DrawRectangleLines(panelX, panelY, panelWidth, panelHeight, LIGHTGRAY);
+        DrawRectangleLines(panelX + 2, panelY + 2, panelWidth - 4, panelHeight - 4, DARKGRAY);
+
+        int titleWidth = MeasureText("GAME OVER", 32);
+        DrawText("GAME OVER", panelX + (panelWidth - titleWidth) / 2, panelY + 20, 32, MAGENTA);
+
+        DrawRectangle(panelX + 30, panelY + 65, panelWidth - 60, 1, {100, 100, 100, 150});
+
+        int resultWidth = MeasureText(resultText.c_str(), 36);
+        DrawText(resultText.c_str(), panelX + (panelWidth - resultWidth) / 2, panelY + 90, 36, resultColor);
+
+        DrawRectangle(panelX + 50, panelY + 170, panelWidth - 100, 1, {80, 80, 80, 100});
+
+        int statsY = panelY + 190;
+
+        DrawText("SCOREBOARD", panelX + (panelWidth - MeasureText("SCOREBOARD", 24)) / 2, statsY, 24, LIGHTGRAY);
+
+        int scoresY = statsY + 40;
+
+        Color p1ScoreColor = p1Score > p2Score ? GREEN : (winner == 0 ? YELLOW : LIGHTGRAY);
+        Color p2ScoreColor = p2Score > p1Score ? GREEN : (winner == 0 ? YELLOW : LIGHTGRAY);
+
+        int scorePanelWidth = 200;
+        int leftScoreX = panelX + (panelWidth/2 - scorePanelWidth - 20);
+        int rightScoreX = panelX + (panelWidth/2 + 20);
+
+        DrawText(play1.c_str(), leftScoreX, scoresY, 18, LIGHTGRAY);
+        DrawText(TextFormat("%d", p1Score), 
+                leftScoreX + (scorePanelWidth - MeasureText(TextFormat("%d", p1Score), 28)) / 2, 
+                scoresY + 30, 28, p1ScoreColor);
+
+        DrawText(play2.c_str(), rightScoreX, scoresY, 18, LIGHTGRAY);
+        DrawText(TextFormat("%d", p2Score), 
+                rightScoreX + (scorePanelWidth - MeasureText(TextFormat("%d", p2Score), 28)) / 2, 
+                scoresY + 30, 28, p2ScoreColor);
+
+        DrawRectangle(panelX + panelWidth/2 - 1, scoresY - 10, 2, 80, {100, 100, 100, 150});
+
+        DrawRectangle(panelX + 40, panelY + panelHeight - 70, panelWidth - 80, 1, {60, 60, 60, 100});
+}
+
 void StateTetrisMultiplayer::Enter() {
     viewer2 = new ViewerTetris(&controllerTetris2, 50, 150, 20);
     viewer1 = new ViewerTetris(&controllerTetris1, 300, 150, 20);
@@ -76,16 +125,13 @@ std::unique_ptr<IState> StateTetrisMultiplayer::Update() {
         }
     }
     else if (currentPhase == MultiplayerPhase::GAME_OVER) {
-        bool localWon = false;
-        bool remoteWon = false;
-        bool tie = false;
 
         if (controllerTetris1.getScore() > controllerTetris2.getScore()) {
-            localWon = true;
+            winner = 2;
         } else if (controllerTetris2.getScore() > controllerTetris1.getScore()) {
-            remoteWon = true;
+            winner = 1;
         } else {
-            tie = true;
+            winner = 0;
         }
         BeginDrawing();
         ClearBackground(BLACK);
@@ -93,7 +139,8 @@ std::unique_ptr<IState> StateTetrisMultiplayer::Update() {
         viewer1->Draw();
         viewer2->Draw();
 
-        DrawEndScreen(controllerTetris1.getScore(), controllerTetris2.getScore(), localWon, remoteWon, tie);
+        DrawEndScreen(controllerTetris1.getScore(), controllerTetris2.getScore(), winner,
+                      winner == 0 ? "IT'S A TIE!" : (winner == 1 ? "PLAYER 1 WINS!" : "PLAYER 2 WINS!"), YELLOW, "PLAYER 1", "PLAYER 2");
         DrawButton(btnMenuRect, "MENU", isMouseOver);
 
         EndDrawing();

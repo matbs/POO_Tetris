@@ -183,11 +183,11 @@ std::unique_ptr<IState> StateTetrisOnline::Update() {
 
     else if (currentPhase == OnlinePhase::GAME_OVER) {
         if (controllerTetris2.getScore() > controllerTetris1.getScore()) {
-            localWon = true;
+            winner = 2;
         } else if (controllerTetris1.getScore() > controllerTetris2.getScore()) {
-            remoteWon = true;
+            winner = 1;
         } else {
-            tie = true;
+            winner = 0;
         }
         BeginDrawing();
         ClearBackground(BLACK);
@@ -195,7 +195,7 @@ std::unique_ptr<IState> StateTetrisOnline::Update() {
         viewer2->Draw();
         viewer1->Draw();
 
-        DrawEndScreen(controllerTetris2.getScore(), controllerTetris1.getScore(), localWon, remoteWon, tie);
+        DrawEndScreen(controllerTetris2.getScore(), controllerTetris1.getScore(), winner, winner == 0 ? "IT'S A TIE!" : (winner == 2 ? "YOU WIN!" : "YOU LOSE!"), (winner == 2 ? GREEN : (winner == 0 ? YELLOW : RED)), "YOU", "ENEMY");
         DrawButton(btnMenuRect, "MENU", isMouseOver);
 
         EndDrawing();

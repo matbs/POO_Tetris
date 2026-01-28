@@ -26,5 +26,7 @@ public:
 
     MultiplayerPhase currentPhase = MultiplayerPhase::PLAYING;
 
+    void DrawEndScreen(int score1, int score2, int winner, std::string resultText, Color color, std::string play1, std::string play2);
+
     int winner = 0;
 };

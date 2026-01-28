@@ -1,10 +1,10 @@
+[28/01/2026 09:40:28] Score: 19560 | Lines: 64 | Level: 6
 [27/01/2026 15:58:22] Score: 9220 | Lines: 55 | Level: 5
 [27/01/2026 21:56:26] Score: 6500 | Lines: 45 | Level: 4
 [28/01/2026 02:09:19] Score: 2220 | Lines: 17 | Level: 1
 [27/01/2026 14:45:34] Score: 460 | Lines: 7 | Level: 0
+[28/01/2026 10:14:48] Score: 160 | Lines: 4 | Level: 0
 [28/01/2026 01:52:22] Score: 120 | Lines: 3 | Level: 0
+[28/01/2026 10:58:14] Score: 100 | Lines: 2 | Level: 0
+[28/01/2026 10:25:20] Score: 80 | Lines: 2 | Level: 0
 [27/01/2026 15:17:10] Score: 40 | Lines: 1 | Level: 0
-[23/01/2026 17:59:05] Score: 0 | Lines: 0 | Level: 0
-[23/01/2026 17:59:16] Score: 0 | Lines: 0 | Level: 0
-[23/01/2026 18:05:10] Score: 0 | Lines: 0 | Level: 0
-[23/01/2026 18:05:23] Score: 0 | Lines: 0 | Level: 0
