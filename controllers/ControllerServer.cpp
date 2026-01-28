@@ -6,7 +6,11 @@ void ControllerServer::accepterWorker() {
     while (running && isServer) {
         if (clientSock == INVALID_SOCKET) {
             struct sockaddr_in clientAddr;
+        #ifdef _WIN32
+            int clientLen = sizeof(clientAddr);
+        #else
             socklen_t clientLen = sizeof(clientAddr);
+        #endif
             SOCKET tempSock = accept(sock, (struct sockaddr*)&clientAddr, &clientLen);
             
             if (tempSock != INVALID_SOCKET) {
@@ -23,7 +27,7 @@ void ControllerServer::senderWorker() {
     GamePacket packet;
     
     while (running) {
-        if (outgoingQueue.pop(packet)) { // Consumidor
+        if (outgoingQueue.pop(packet)) {
             SOCKET target = isServer ? clientSock : sock;
             if (target != INVALID_SOCKET) {
                 send(target, (char*)&packet, sizeof(GamePacket), 0);
@@ -34,9 +38,10 @@ void ControllerServer::senderWorker() {
 
 void ControllerServer::receiverWorker() {
     GamePacket packet;
-    SOCKET target = isServer ? clientSock : sock;
     
     while (running) {
+        SOCKET target = isServer ? clientSock : sock;
+
         if (target == INVALID_SOCKET) {
             std::this_thread::sleep_for(std::chrono::milliseconds(10));
             continue;
@@ -45,12 +50,11 @@ void ControllerServer::receiverWorker() {
         int bytesReceived = recv(target, (char*)&packet, sizeof(GamePacket), 0);
         
         if (bytesReceived > 0) {
-            incomingQueue.push(packet); // Productor
+            incomingQueue.push(packet);
         } else if (bytesReceived == 0) {
-            // Closed Connection
-            break;
+            connected = false;
+            if(isServer) clientSock = INVALID_SOCKET;
         } else {
-            // Error OR non-blocking without data
 #ifdef _WIN32
             if (WSAGetLastError() != WSAEWOULDBLOCK)
 #else
@@ -156,6 +160,9 @@ bool ControllerServer::InitializeSocket(int port) {
     
     if (sock == INVALID_SOCKET) return false;
 
+    int opt = 1;
+    setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (char*)&opt, sizeof(opt));
+
     sockaddr_in serverAddr;
     serverAddr.sin_family = AF_INET;
     serverAddr.sin_addr.s_addr = INADDR_ANY;
@@ -211,11 +218,10 @@ bool ControllerServer::ConnectToServer(const std::string& ip, int port) {
 }
 
 bool ControllerServer::ConnectClient(const std::string& ip, int port) {
-    if (!ConnectToServer(ip, port)) return false; // Método existente adaptado
+    if (!ConnectToServer(ip, port)) return false;
     
     running = true;
     
-    // Threads de envio e recebimento (apenas)
     receiverThread = std::thread(&ControllerServer::receiverWorker, this);
     senderThread = std::thread(&ControllerServer::senderWorker, this);
     

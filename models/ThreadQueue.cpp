@@ -27,6 +27,7 @@ bool ThreadSafeQueue::pop(GamePacket& packet) {
 }
 
 void ThreadSafeQueue::shutdown_queue() {
+    std::lock_guard<std::mutex> lock(mtx);
     shutdown = true;
     cv.notify_all();
 }

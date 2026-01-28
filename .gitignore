@@ -1,3 +1,4 @@
 game*
 *.txt
 /raylib_win/*
+/raylib_linux/*

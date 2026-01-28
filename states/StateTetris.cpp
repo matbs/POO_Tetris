@@ -4,7 +4,7 @@
 #include <stdio.h>
 
 void StateTetris::Enter() {
-    viewer = new ViewerTetris(&controllerTetris, 50, 150, 15);
+    viewer = new ViewerTetris(&controllerTetris, 200, 80, 25);
 }
 
 std::unique_ptr<IState> StateTetris::Update() {
